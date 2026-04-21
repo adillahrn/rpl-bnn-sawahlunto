@@ -1,1 +1,0 @@
-# rpl-bnn-sawahlunto

@@ -1,0 +1,7 @@
+{
+  "name": "bnn-monorepo",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ]
+}

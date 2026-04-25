@@ -73,12 +73,12 @@ export default {
         "gutter": "24px"
       },
       "fontFamily": {
-        "display-hero": ["Inter", "sans-serif"],
-        "body-small": ["Inter", "sans-serif"],
-        "label-bold": ["Inter", "sans-serif"],
-        "body-main": ["Inter", "sans-serif"],
-        "headline-card": ["Inter", "sans-serif"],
-        "headline-section": ["Inter", "sans-serif"]
+        "display-hero": ["Poppins", "sans-serif"],
+        "body-small": ["Poppins", "sans-serif"],
+        "label-bold": ["Poppins", "sans-serif"],
+        "body-main": ["Poppins", "sans-serif"],
+        "headline-card": ["Poppins", "sans-serif"],
+        "headline-section": ["Poppins", "sans-serif"]
       },
       "fontSize": {
         "display-hero": ["64px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
@@ -91,6 +91,7 @@ export default {
     },
   },
   plugins: [
+    require('@tailwindcss/typography'),
     require('@tailwindcss/forms'),
     require('@tailwindcss/container-queries')
   ],

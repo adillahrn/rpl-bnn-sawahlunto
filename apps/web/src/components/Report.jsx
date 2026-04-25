@@ -1,27 +1,19 @@
 export default function Report() {
   return (
-    <section className="bg-primary text-on-primary py-24 relative overflow-hidden">
-      <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-white to-transparent"></div>
-      <div className="max-w-4xl mx-auto px-6 relative z-10 text-center">
-        <span className="material-symbols-outlined text-secondary-fixed text-6xl mb-6" style={{fontVariationSettings: "'FILL' 1"}}>report</span>
-        <h2 className="font-display-hero text-headline-section md:text-[48px] font-bold leading-tight mb-6">Melihat Tindak Pidana Narkotika?</h2>
-        <p className="font-body-main text-body-main text-inverse-primary mb-10 max-w-2xl mx-auto">
-          Jangan ragu untuk melapor. Identitas Anda dijamin kerahasiaannya. Bersama kita ciptakan lingkungan yang aman dan bersih dari narkoba.
-        </p>
-        <div className="bg-surface-container-lowest/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 max-w-xl mx-auto">
-          <form className="flex flex-col gap-4 text-left">
-            <div>
-              <label className="block font-label-bold text-label-bold text-white mb-2">Jenis Laporan</label>
-              <input className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-white placeholder:text-white/50 focus:border-secondary-fixed focus:ring-1 focus:ring-secondary-fixed outline-none transition-all" placeholder="Contoh: Indikasi peredaran..." type="text"/>
-            </div>
-            <div>
-              <label className="block font-label-bold text-label-bold text-white mb-2">Lokasi Kejadian</label>
-              <input className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-white placeholder:text-white/50 focus:border-secondary-fixed focus:ring-1 focus:ring-secondary-fixed outline-none transition-all" placeholder="Alamat atau nama tempat..." type="text"/>
-            </div>
-            <button className="mt-4 bg-secondary-container text-on-secondary-container font-label-bold text-label-bold px-8 py-4 rounded-lg hover:bg-secondary-fixed transition-colors w-full flex items-center justify-center gap-2" type="button">
-              Lanjut ke Form Resmi <span className="material-symbols-outlined">arrow_forward</span>
-            </button>
-          </form>
+    <section className="py-10 sm:py-16 md:py-xl max-w-container-max mx-auto px-4 sm:px-6 md:px-gutter mb-6 sm:mb-12">
+      <div className="bg-primary-container rounded-2xl sm:rounded-3xl p-6 sm:p-10 md:p-16 flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-10 shadow-[0px_20px_40px_rgba(13,38,194,0.2)] relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-48 sm:w-64 h-48 sm:h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+        <div className="relative z-10 md:w-2/3 text-center md:text-left">
+          <h2 className="font-headline-section text-[22px] sm:text-headline-section text-on-primary mb-3 sm:mb-4">Laporkan Tindak Pidana Narkotika</h2>
+          <p className="font-body-main text-body-main text-surface-container-highest mb-0">
+            Kerahasiaan identitas pelapor dijamin oleh undang-undang. Bersama kita ciptakan lingkungan yang aman dan bersih dari narkoba.
+          </p>
+        </div>
+        <div className="relative z-10 w-full md:w-auto flex flex-col sm:flex-row gap-4">
+          <button className="bg-secondary-container text-on-secondary-container px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-label-bold text-label-bold hover:bg-secondary-fixed transition-colors shadow-lg active:scale-95 flex items-center justify-center gap-2 whitespace-nowrap">
+            <span className="material-symbols-outlined">warning</span>
+            Lapor Sekarang
+          </button>
         </div>
       </div>
     </section>

@@ -1,14 +1,14 @@
 # Web Aplikasi BNN Kota Sawahlunto 🇮🇩
 
-Proyek ini adalah sistem informasi web resmi dan portal layanan terpadu untuk Badan Narkotika Nasional (BNN) Kota Sawahlunto. Aplikasi ini dirancang modern, responsif, dan dinamis untuk memudahkan masyarakat mengakses informasi, layanan, serta fitur pengaduan masyarakat.
+Proyek ini adalah sistem informasi web resmi untuk Badan Narkotika Nasional (BNN) Kota Sawahlunto. Website ini dirancang modern, responsif, dan dinamis untuk memudahkan masyarakat mengakses informasi, layanan, berita, serta fitur pengaduan masyarakat.
 
 ## 🚀 Fitur Utama
 
-- **Halaman Profil & Struktur Organisasi**: Menampilkan informasi lengkap mengenai lembaga dan struktur kepemimpinan.
-- **Berita & Informasi Edukasi**: Portal artikel dan video edukasi P4GN (Pencegahan, Pemberantasan Penyalahgunaan dan Peredaran Gelap Narkotika).
-- **Layanan Publik**: Informasi lengkap mengenai layanan Rehabilitasi, Tes Urine, SKHPN, dan Konseling.
-- **Pengaduan Masyarakat Berbasis Peta**: Formulir pengaduan rahasia yang terintegrasi langsung dengan database backend.
-- **Admin Dashboard**: Halaman manajemen (CMS) khusus admin untuk mengelola laporan masyarakat, berita, capaian kinerja, dan video edukasi.
+- **Halaman Profil**: Menampilkan informasi mengenai BNN Kota Sawahunto dan struktur.
+- **Berita & Informasi Edukasi**: Portal berita, artikel dan video edukasi P4GN (Pencegahan, Pemberantasan Penyalahgunaan dan Peredaran Gelap Narkotika).
+- **Layanan Publik**: Informasi mengenai layanan Rehabilitasi, Tes Urine, SKHPN, dan Konseling.
+- **Pengaduan Masyarakat**: Formulir pengaduan yang terintegrasi langsung dengan database backend.
+- **Admin Dashboard**: Halaman manajemen (CMS) khusus admin untuk mengelola laporan masyarakat, berita, capaian kinerja, dan informasi edukasi.
 
 ## 💻 Tech Stack
 

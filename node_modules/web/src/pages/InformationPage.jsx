@@ -1,19 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { fetchInformation } from '../lib/sanity';
 
 const filters = ['Semua', 'Video', 'Artikel'];
-
-const items = [
-  { id: 1, type: 'Video', tag: 'Edukasi', title: 'Bahaya Narkoba Bagi Generasi Muda', desc: 'Penjelasan lengkap mengenai dampak narkoba terhadap kesehatan fisik dan mental generasi muda Indonesia.', date: '15 Okt 2023', youtubeId: 'dQw4w9WgXcQ' },
-  { id: 2, type: 'Artikel', tag: 'Edukasi', title: 'Mengenal Jenis-jenis Narkotika dan Dampaknya', desc: 'Panduan lengkap mengenai klasifikasi narkotika golongan I, II, III serta dampak jangka pendek dan panjang bagi kesehatan.', date: '12 Okt 2023' },
-  { id: 3, type: 'Video', tag: 'Rehabilitasi', title: 'Proses Rehabilitasi di BNN Sawahlunto', desc: 'Dokumentasi proses rehabilitasi medis dan sosial yang tersedia di fasilitas BNN Kota Sawahlunto.', date: '10 Okt 2023', youtubeId: 'dQw4w9WgXcQ' },
-  { id: 4, type: 'Artikel', tag: 'Hukum', title: 'Regulasi Terbaru UU Narkotika di Indonesia', desc: 'Rangkuman perubahan penting dalam regulasi narkotika terbaru dan implikasinya bagi masyarakat.', date: '08 Okt 2023' },
-  { id: 5, type: 'Video', tag: 'Pencegahan', title: 'Sosialisasi P4GN di Lingkungan Sekolah', desc: 'Rekaman kegiatan sosialisasi pencegahan narkoba di berbagai sekolah menengah Kota Sawahlunto.', date: '05 Okt 2023', youtubeId: 'dQw4w9WgXcQ' },
-  { id: 6, type: 'Artikel', tag: 'Kesehatan', title: 'Dampak Penyalahgunaan Narkoba pada Otak Remaja', desc: 'Studi ilmiah menunjukkan kerusakan permanen yang terjadi pada otak remaja akibat penyalahgunaan zat adiktif.', date: '01 Okt 2023' },
-  { id: 7, type: 'Artikel', tag: 'Pencegahan', title: 'Tips Orang Tua Melindungi Anak dari Narkoba', desc: 'Langkah-langkah praktis yang bisa dilakukan orang tua untuk menghindarkan anak dari bahaya narkoba.', date: '28 Sep 2023' },
-  { id: 8, type: 'Video', tag: 'Operasi', title: 'Tanda-tanda Penyalahgunaan Narkoba', desc: 'Video edukasi mengenali perubahan perilaku seseorang yang terindikasi penyalahgunaan narkoba.', date: '25 Sep 2023', youtubeId: 'dQw4w9WgXcQ' },
-  { id: 9, type: 'Artikel', tag: 'Rehabilitasi', title: 'Kisah Sukses Pemulihan Mantan Pecandu', desc: 'Cerita inspiratif dari mereka yang berhasil pulih dan kembali menjalani kehidupan produktif.', date: '20 Sep 2023' },
-];
 
 const faqData = [
   { q: 'Apa itu Narkotika?', a: 'Narkotika adalah zat atau obat yang berasal dari tanaman atau bukan tanaman, baik sintetis maupun semisintetis, yang dapat menyebabkan penurunan atau perubahan kesadaran, hilangnya rasa nyeri, dan dapat menimbulkan ketergantungan. Contoh: ganja, kokain, heroin, dan morfin.' },
@@ -27,8 +16,37 @@ const faqData = [
 export default function InformationPage() {
   const [activeFilter, setActiveFilter] = useState('Semua');
   const [openFaq, setOpenFaq] = useState(null);
+  const [items, setItems] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const filtered = activeFilter === 'Semua' ? items : items.filter(i => i.type === activeFilter);
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoading(true);
+      try {
+        const data = await fetchInformation(20);
+        setItems(data);
+      } catch (error) {
+        console.error('Error fetching information:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadData();
+  }, []);
+
+  const filtered = activeFilter === 'Semua' 
+    ? items 
+    : items.filter(i => {
+        const type = i.mediaType === 'youtube' || i.mediaType === 'video' ? 'Video' : 'Artikel';
+        return type === activeFilter;
+      });
+
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    return new Date(dateString).toLocaleDateString('id-ID', {
+      day: 'numeric', month: 'short', year: 'numeric'
+    });
+  };
 
   return (
     <main className="pt-20 md:pt-32 pb-12 md:pb-xl">
@@ -59,33 +77,53 @@ export default function InformationPage() {
         </div>
 
         {/* Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 md:gap-8">
-          {filtered.map((item) => (
-            <article key={item.id} className="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-[0px_10px_25px_rgba(13,38,194,0.04)] border border-surface-container group flex flex-col">
-              <div className="p-4 sm:p-6 flex flex-col flex-grow">
-                <div className="flex items-center gap-2 mb-2 sm:mb-3">
-                  <span className={`font-label-bold text-[11px] sm:text-[12px] px-2.5 sm:px-3 py-1 rounded-full ${
-                    item.type === 'Video'
-                      ? 'bg-surface-tint/10 text-surface-tint'
-                      : 'bg-primary-container/10 text-primary'
-                  }`}>
-                    {item.type === 'Video' ? '▶ Video' : item.tag}
-                  </span>
-                  <span className="font-body-small text-body-small text-on-surface-variant text-xs">{item.date}</span>
-                </div>
-                <h3 className="font-headline-card text-[16px] sm:text-headline-card text-on-surface mb-2 sm:mb-3 group-hover:text-primary transition-colors leading-snug">{item.title}</h3>
-                <p className="font-body-small text-body-small text-on-surface-variant line-clamp-2 mb-3 sm:mb-4">{item.desc}</p>
-                <Link
-                  to={`/informasi/${item.id}`}
-                  className="font-label-bold text-label-bold text-primary flex items-center gap-base mt-auto hover:text-primary-fixed-variant transition-colors"
-                >
-                  {item.type === 'Video' ? 'Tonton Video' : 'Baca Selengkapnya'}
-                  <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-                </Link>
-              </div>
-            </article>
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="flex justify-center items-center py-20">
+            <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        ) : filtered.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 md:gap-8">
+            {filtered.map((item) => {
+              const isVideo = item.mediaType === 'youtube' || item.mediaType === 'video';
+              return (
+                <article key={item._id} className="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-[0px_10px_25px_rgba(13,38,194,0.04)] border border-surface-container group flex flex-col">
+                  {item.imageUrl && (
+                    <div className="relative h-40 sm:h-48 overflow-hidden bg-surface-container-high">
+                      <img className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={item.title} src={item.imageUrl}/>
+                    </div>
+                  )}
+                  <div className="p-4 sm:p-6 flex flex-col flex-grow">
+                    <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                      <span className={`font-label-bold text-[11px] sm:text-[12px] px-2.5 sm:px-3 py-1 rounded-full ${
+                        isVideo
+                          ? 'bg-surface-tint/10 text-surface-tint'
+                          : 'bg-primary-container/10 text-primary'
+                      }`}>
+                        {isVideo ? '▶ Video' : (item.category || 'Artikel')}
+                      </span>
+                      <span className="font-body-small text-body-small text-on-surface-variant text-xs">{formatDate(item.publishedAt)}</span>
+                    </div>
+                    <h3 className="font-headline-card text-[16px] sm:text-headline-card text-on-surface mb-2 sm:mb-3 group-hover:text-primary transition-colors leading-snug">{item.title}</h3>
+                    <p className="font-body-small text-body-small text-on-surface-variant line-clamp-2 mb-3 sm:mb-4">{item.excerpt}</p>
+                    <Link
+                      to={`/informasi/${item.slug?.current}`}
+                      className="font-label-bold text-label-bold text-primary flex items-center gap-base mt-auto hover:text-primary-fixed-variant transition-colors"
+                    >
+                      {isVideo ? 'Tonton Video' : 'Baca Selengkapnya'}
+                      <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                    </Link>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="text-center py-20 bg-surface-container-lowest rounded-2xl border border-outline-variant">
+            <span className="material-symbols-outlined text-6xl text-outline mb-4">info</span>
+            <h3 className="font-headline-card text-xl text-on-surface mb-2">Belum ada informasi</h3>
+            <p className="text-on-surface-variant">Belum ada informasi atau edukasi untuk kategori ini.</p>
+          </div>
+        )}
 
         {/* Ensiklopedia Narkotika (FAQ) */}
         <section className="mt-16 md:mt-24">

@@ -1,6 +1,40 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { fetchNews } from '../lib/sanity';
 
 export default function News() {
+  const [news, setNews] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadNews = async () => {
+      setIsLoading(true);
+      try {
+        const data = await fetchNews(3);
+        setNews(data);
+      } catch (error) {
+        console.error('Error fetching news:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadNews();
+  }, []);
+
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    return new Date(dateString).toLocaleDateString('id-ID', {
+      day: 'numeric', month: 'short', year: 'numeric'
+    });
+  };
+
+  const getCategoryColor = (category) => {
+    const cat = (category || '').toLowerCase();
+    if (cat === 'sosialisasi') return 'bg-primary-container/10 text-primary';
+    if (cat === 'operasi') return 'bg-secondary-container/20 text-on-secondary-fixed-variant';
+    return 'bg-surface-tint/10 text-surface-tint';
+  };
+
   return (
     <section className="bg-surface py-xl">
       <div className="max-w-container-max mx-auto px-6 md:px-lg">
@@ -13,56 +47,47 @@ export default function News() {
             Lihat Semua <span className="material-symbols-outlined text-sm">arrow_forward</span>
           </Link>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <article className="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-[0px_10px_25px_rgba(13,38,194,0.04)] border border-surface-container group flex flex-col">
-            <div className="relative h-48 overflow-hidden">
-              <img className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="speaker at a podium delivering a presentation to an audience in a bright conference hall with blue banners" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4rc60plW0EROPCpMePB2almB00wxtWif6IeVR1JIZE2C5JhGwzNUirn49HYODiBqCL1RB31kpRt17HttiS5M5Wc8wwEteJ-zXWekYJ8O-CTKLm8SbNDRMhSl1pHJoA0BqPlsJFkdWMIm1UZnqbZv5Zw2hcfg1xwplz0qInnLU9hcsCf6v4DIvOJ0eY1yPcwpd8nTHCshpabtTVvYe-o1Vj0ubDg81ZV4aerXhRqIxN7yUV298el-YvEH5eHyxOjD6jsUgFNgwGRFh"/>
-            </div>
-            <div className="p-6 flex flex-col flex-grow">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="bg-primary-container/10 text-primary font-label-bold text-[12px] px-3 py-1 rounded-full">Sosialisasi</span>
-                <span className="font-body-small text-body-small text-on-surface-variant text-xs">12 Okt 2023</span>
-              </div>
-              <h3 className="font-headline-card text-headline-card text-on-surface mb-3 group-hover:text-primary transition-colors">BNN Sawahlunto Gelar Penyuluhan P4GN di SMAN 1</h3>
-              <p className="font-body-small text-body-small text-on-surface-variant line-clamp-2 mb-4">Kegiatan ini bertujuan untuk memberikan pemahaman bahaya narkotika sejak dini kepada generasi muda di lingkungan sekolah menengah.</p>
-              <Link to="/berita/detail" className="font-label-bold text-label-bold text-primary flex items-center gap-base mt-auto hover:text-primary-fixed-variant transition-colors">
-                Baca Selengkapnya <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+
+        {isLoading ? (
+          <div className="flex justify-center items-center py-10">
+            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        ) : news.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {news.map((item) => (
+              <Link to={`/berita/${item.slug?.current}`} key={item._id} className="block group">
+                <article className="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-[0px_10px_25px_rgba(13,38,194,0.04)] border border-surface-container flex flex-col h-full hover:shadow-lg transition-all duration-300">
+                  <div className="relative h-48 overflow-hidden bg-surface-container-high">
+                    {item.imageUrl ? (
+                      <img className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={item.title} src={item.imageUrl}/>
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-on-surface-variant">
+                        <span className="material-symbols-outlined text-4xl">image</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-6 flex flex-col flex-grow">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className={`font-label-bold text-[12px] px-3 py-1 rounded-full capitalize ${getCategoryColor(item.category)}`}>
+                        {item.category || 'Umum'}
+                      </span>
+                      <span className="font-body-small text-body-small text-on-surface-variant text-xs">{formatDate(item.publishedAt)}</span>
+                    </div>
+                    <h3 className="font-headline-card text-headline-card text-on-surface mb-3 group-hover:text-primary transition-colors">{item.title}</h3>
+                    <p className="font-body-small text-body-small text-on-surface-variant line-clamp-2 mb-4">{item.excerpt}</p>
+                    <div className="font-label-bold text-label-bold text-primary flex items-center gap-base mt-auto group-hover:text-primary-fixed-variant transition-colors">
+                      Baca Selengkapnya <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                    </div>
+                  </div>
+                </article>
               </Link>
-            </div>
-          </article>
-          <article className="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-[0px_10px_25px_rgba(13,38,194,0.04)] border border-surface-container group flex flex-col">
-            <div className="relative h-48 overflow-hidden">
-              <img className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="medical professional holding a small plastic cup for testing in a bright clean clinical environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUMteiVj9eedky3IfCe6gvVz5djWqVA1N2oPqvMG0sWuUcS_84oq-stx3hgqroeh_nASxWKPB0UGicd0N8lMyeHRUIXKROJ1t7ppXhSA3kMQVzdqbQdKMCLzBCV3SGbV4XG6hgsy1g8BlDNzr9KYJsiR-2gBS43QBi0qDdp7QeCyklFghmnRBCHN1qEbSPt-BeKAcerz7rFtSzlI3rPLB4GEiKxhQIlGRiPbBAvh9Ie1Sy0mriJOIYK2jYpyp4BPN2O-Ki4LcHKJt7"/>
-            </div>
-            <div className="p-6 flex flex-col flex-grow">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="bg-secondary-container/20 text-on-secondary-fixed-variant font-label-bold text-[12px] px-3 py-1 rounded-full">Operasi</span>
-                <span className="font-body-small text-body-small text-on-surface-variant text-xs">08 Okt 2023</span>
-              </div>
-              <h3 className="font-headline-card text-headline-card text-on-surface mb-3 group-hover:text-primary transition-colors">Sidak Tes Urine Pegawai Pemerintah Daerah</h3>
-              <p className="font-body-small text-body-small text-on-surface-variant line-clamp-2 mb-4">Langkah preventif dilakukan melalui tes urine mendadak untuk memastikan lingkungan kerja pemerintahan bebas dari pengaruh narkoba.</p>
-              <Link to="/berita/detail" className="font-label-bold text-label-bold text-primary flex items-center gap-base mt-auto hover:text-primary-fixed-variant transition-colors">
-                Baca Selengkapnya <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-              </Link>
-            </div>
-          </article>
-          <article className="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-[0px_10px_25px_rgba(13,38,194,0.04)] border border-surface-container group flex flex-col">
-            <div className="relative h-48 overflow-hidden">
-              <img className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="group of people sitting in a circle in a supportive therapy session focusing on mental health and recovery" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHrGxOJBmfFBI2Ws1B8T3231pxzebK10AjuItp0CMUcKMyt51zLbWbjFZIftQqqZ0_jErzAopJWixPsOqLeKzih5JxDyn0L5q8B5Bidb0Lx4iBLHZAOvujLvOqSJWDSfVvb-7unAuOYG50ZFdBpZvgoJYgDZu170KmjVYRVmdrgVZ8DfeeLMPpP2U1NsznZu04cFkJRxKDRhE0SXGkbu4PUvgVLpNoKK4aERdiDGiVXoPnZ8Q_2nCszoLF5vWsJox8nXuc1_qx0Wt4"/>
-            </div>
-            <div className="p-6 flex flex-col flex-grow">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="bg-surface-tint/10 text-surface-tint font-label-bold text-[12px] px-3 py-1 rounded-full">Rehabilitasi</span>
-                <span className="font-body-small text-body-small text-on-surface-variant text-xs">01 Okt 2023</span>
-              </div>
-              <h3 className="font-headline-card text-headline-card text-on-surface mb-3 group-hover:text-primary transition-colors">Program Pemulihan Berbasis Masyarakat Diresmikan</h3>
-              <p className="font-body-small text-body-small text-on-surface-variant line-clamp-2 mb-4">Fasilitas baru untuk mendukung rehabilitasi jalan bagi pecandu tingkat ringan dengan pendekatan komunitas lokal.</p>
-              <Link to="/berita/detail" className="font-label-bold text-label-bold text-primary flex items-center gap-base mt-auto hover:text-primary-fixed-variant transition-colors">
-                Baca Selengkapnya <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-              </Link>
-            </div>
-          </article>
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-10 bg-surface-container-lowest rounded-2xl border border-outline-variant">
+            <p className="text-on-surface-variant">Belum ada berita yang diterbitkan.</p>
+          </div>
+        )}
       </div>
     </section>
   );

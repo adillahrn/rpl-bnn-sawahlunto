@@ -1,11 +1,84 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { submitReport, writeClient } from '../lib/sanity';
+import PhoneInput from 'react-phone-number-input';
+import 'react-phone-number-input/style.css';
 
 export default function ReportPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [file, setFile] = useState(null);
+  const [phone, setPhone] = useState('');
+  
+  // Location Autocomplete State
+  const [location, setLocation] = useState('');
+  const [locationQuery, setLocationQuery] = useState('');
+  const [locationResults, setLocationResults] = useState([]);
+  const [isSearchingLocation, setIsSearchingLocation] = useState(false);
+  const [showLocationDropdown, setShowLocationDropdown] = useState(false);
+  const locationRef = useRef(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (locationRef.current && !locationRef.current.contains(event.target)) {
+        setShowLocationDropdown(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Debounced Location Search
+  useEffect(() => {
+    const searchLocation = async () => {
+      if (!locationQuery || locationQuery.length < 3) {
+        setLocationResults([]);
+        return;
+      }
+      setIsSearchingLocation(true);
+      try {
+        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(locationQuery)}&countrycodes=id&limit=5`);
+        const data = await response.json();
+        setLocationResults(data);
+      } catch (error) {
+        console.error('Location search error:', error);
+      } finally {
+        setIsSearchingLocation(false);
+      }
+    };
+
+    const timeoutId = setTimeout(() => {
+      if (locationQuery !== location) {
+        searchLocation();
+      }
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [locationQuery, location]);
+
+  const handleLocationSelect = (selectedLocation) => {
+    setLocation(selectedLocation.display_name);
+    setLocationQuery(selectedLocation.display_name);
+    setShowLocationDropdown(false);
+  };
+
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setFile(e.target.files[0]);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!phone) {
+      alert("Silakan masukkan nomor telepon yang valid.");
+      return;
+    }
+    if (!location) {
+      alert("Silakan pilih atau masukkan lokasi kejadian.");
+      return;
+    }
+
     setIsSubmitting(true);
     setSuccessMessage('');
 
@@ -13,27 +86,33 @@ export default function ReportPage() {
     const data = Object.fromEntries(formData.entries());
 
     try {
-      const response = await fetch('/api/reports', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: data.name,
-          phone: data.phone,
-          location: data.location,
-          description: data.description,
-        }),
-      });
-      
-      const result = await response.json();
-      if (result.success) {
-        setSuccessMessage('Laporan Anda berhasil dikirim. Terima kasih atas partisipasi Anda.');
-        e.target.reset();
-      } else {
-        alert('Gagal mengirim laporan. Silakan coba lagi.');
+      let evidenceId = null;
+
+      if (file) {
+        const assetType = file.type.startsWith('image/') ? 'image' : 'file';
+        const asset = await writeClient.assets.upload(assetType, file, {
+          filename: file.name
+        });
+        evidenceId = asset._id;
       }
+
+      await submitReport({
+        name: data.name,
+        phone: phone,
+        location: location,
+        description: data.description,
+        evidenceId
+      });
+
+      setSuccessMessage('Laporan Anda berhasil dikirim. Terima kasih atas partisipasi Anda.');
+      e.target.reset();
+      setFile(null);
+      setPhone('');
+      setLocation('');
+      setLocationQuery('');
     } catch (error) {
       console.error('Error submitting report:', error);
-      alert('Terjadi kesalahan jaringan.');
+      alert('Terjadi kesalahan saat mengirim laporan. Silakan coba lagi.');
     } finally {
       setIsSubmitting(false);
     }
@@ -125,14 +204,60 @@ export default function ReportPage() {
               </div>
               <div className="space-y-2">
                 <label className="font-label-bold text-label-bold text-on-surface-variant block" htmlFor="phone">Nomor Telepon <span className="text-error">*</span></label>
-                <input className="w-full bg-surface text-on-surface border border-outline-variant rounded-lg px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary transition-colors outline-none font-body-main text-body-main placeholder:text-outline/60 text-sm sm:text-base" id="phone" name="phone" placeholder="Untuk keperluan verifikasi" required type="tel"/>
+                <div className="w-full bg-surface text-on-surface border border-outline-variant rounded-lg px-4 py-3 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-colors outline-none">
+                  <PhoneInput
+                    international
+                    defaultCountry="ID"
+                    value={phone}
+                    onChange={setPhone}
+                    placeholder="Contoh: +62 812 3456 7890"
+                    className="PhoneInputCustom font-body-main text-sm sm:text-base text-on-surface w-full bg-transparent outline-none border-none"
+                    style={{ '--PhoneInput-color--focus': 'transparent' }}
+                  />
+                </div>
               </div>
             </div>
 
             {/* Required Details Section */}
-            <div className="space-y-2 pt-4 border-t border-outline-variant/30">
+            <div className="space-y-2 pt-4 border-t border-outline-variant/30 relative" ref={locationRef}>
               <label className="font-label-bold text-label-bold text-on-surface-variant block" htmlFor="location">Lokasi Kejadian <span className="text-error">*</span></label>
-              <input className="w-full bg-surface text-on-surface border border-outline-variant rounded-lg px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary transition-colors outline-none font-body-main text-body-main placeholder:text-outline/60 text-sm sm:text-base" id="location" name="location" placeholder="Detail alamat atau patokan lokasi" required type="text"/>
+              <div className="relative">
+                <input 
+                  className="w-full bg-surface text-on-surface border border-outline-variant rounded-lg px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary transition-colors outline-none font-body-main text-body-main placeholder:text-outline/60 text-sm sm:text-base pr-10" 
+                  id="location" 
+                  placeholder="Ketik lokasi untuk mencari..." 
+                  required 
+                  type="text"
+                  value={locationQuery}
+                  onChange={(e) => {
+                    setLocationQuery(e.target.value);
+                    setLocation(e.target.value);
+                    setShowLocationDropdown(true);
+                  }}
+                  onFocus={() => setShowLocationDropdown(true)}
+                />
+                {isSearchingLocation && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                )}
+              </div>
+              
+              {/* Location Autocomplete Dropdown */}
+              {showLocationDropdown && locationResults.length > 0 && (
+                <ul className="absolute z-10 w-full mt-1 bg-surface-container-lowest border border-outline-variant rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                  {locationResults.map((result) => (
+                    <li 
+                      key={result.place_id}
+                      onClick={() => handleLocationSelect(result)}
+                      className="px-4 py-3 hover:bg-surface-container cursor-pointer border-b border-outline-variant/30 last:border-0 font-body-small text-on-surface text-sm"
+                    >
+                      <div className="flex items-start gap-2">
+                        <span className="material-symbols-outlined text-outline mt-0.5 text-[18px]">location_on</span>
+                        <span>{result.display_name}</span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -142,15 +267,19 @@ export default function ReportPage() {
 
             {/* File Upload */}
             <div className="space-y-2">
-              <label className="font-label-bold text-label-bold text-on-surface-variant block">Bukti Pendukung <span className="text-error">*</span></label>
-              <div className="w-full border-2 border-dashed border-outline-variant/60 rounded-xl p-5 sm:p-8 text-center hover:bg-surface hover:border-primary transition-colors cursor-pointer group">
+              <label className="font-label-bold text-label-bold text-on-surface-variant block">Bukti Pendukung <span className="font-normal text-on-surface-variant/80 text-xs">(Opsional)</span></label>
+              <label className="w-full border-2 border-dashed border-outline-variant/60 rounded-xl p-5 sm:p-8 text-center hover:bg-surface hover:border-primary transition-colors cursor-pointer group block">
                 <div className="flex justify-center mb-3 text-outline group-hover:text-primary transition-colors">
-                  <span className="material-symbols-outlined text-3xl sm:text-4xl">cloud_upload</span>
+                  <span className="material-symbols-outlined text-3xl sm:text-4xl">{file ? 'check_circle' : 'cloud_upload'}</span>
                 </div>
-                <p className="font-label-bold text-label-bold text-on-surface mb-1 text-sm">Pilih file atau seret ke sini</p>
-                <p className="font-body-small text-body-small text-outline text-xs sm:text-sm">Mendukung Foto (JPG, PNG), Video (MP4) maks 20MB</p>
-                <input className="hidden" type="file" required/>
-              </div>
+                <p className="font-label-bold text-label-bold text-on-surface mb-1 text-sm">
+                  {file ? file.name : 'Pilih file atau seret ke sini'}
+                </p>
+                {!file && (
+                  <p className="font-body-small text-body-small text-outline text-xs sm:text-sm">Mendukung Foto (JPG, PNG), Video (MP4) maks 20MB</p>
+                )}
+                <input className="hidden" type="file" onChange={handleFileChange} />
+              </label>
             </div>
 
             {/* Submit Action */}

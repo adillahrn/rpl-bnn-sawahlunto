@@ -2,8 +2,8 @@ import Hero from '../components/Hero';
 import Profile from '../components/Profile';
 import OrgStructure from '../components/OrgStructure';
 import Stats from '../components/Stats';
-import News from '../components/News';
 import Services from '../components/Services';
+import News from '../components/News';
 import Report from '../components/Report';
 
 export default function Home() {
@@ -13,8 +13,8 @@ export default function Home() {
       <Profile />
       <OrgStructure />
       <Stats />
-      <News />
       <Services />
+      <News />
       <Report />
     </main>
   );

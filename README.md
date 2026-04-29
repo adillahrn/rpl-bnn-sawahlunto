@@ -4,26 +4,26 @@ Proyek ini adalah sistem informasi web resmi untuk Badan Narkotika Nasional (BNN
 
 ## 🚀 Fitur Utama
 
-- **Halaman Profil**: Menampilkan informasi mengenai BNN Kota Sawahunto dan struktur.
+- **Halaman Profil**: Menampilkan informasi mengenai BNN Kota Sawahunto dan struktur organisasi.
 - **Berita & Informasi Edukasi**: Portal berita, artikel dan video edukasi P4GN (Pencegahan, Pemberantasan Penyalahgunaan dan Peredaran Gelap Narkotika).
 - **Layanan Publik**: Informasi mengenai layanan Rehabilitasi, Tes Urine, SKHPN, dan Konseling.
-- **Pengaduan Masyarakat**: Formulir pengaduan yang terintegrasi langsung dengan database backend.
-- **Admin Dashboard**: Halaman manajemen (CMS) khusus admin untuk mengelola laporan masyarakat, berita, capaian kinerja, dan informasi edukasi.
+- **Pengaduan Masyarakat**: Formulir pengaduan masyarakat yang terintegrasi langsung dengan database Sanity CMS dan Firebase Storage untuk unggah berkas.
+- **Admin Dashboard (CMS)**: Sistem manajemen konten menggunakan Sanity Studio khusus admin untuk mengelola laporan masyarakat, berita, layanan, dan informasi edukasi.
 
 ## 💻 Tech Stack
 
-Proyek ini menggunakan arsitektur **Monorepo** sederhana dengan pemisahan antara `web` (Frontend) dan `api` (Backend).
+Proyek ini menggunakan arsitektur **Monorepo** sederhana dengan pemisahan antara `web` (Frontend) dan `cms` (Backend/CMS).
 
 ### Frontend (`apps/web`)
 - **React.js** (via **Vite**) - Fast, modern frontend framework.
 - **Tailwind CSS** - Utility-first styling framework.
 - **React Router** - Client-side routing.
+- **Sanity Client** - Fetching data dari headless CMS.
+- **Firebase SDK** - Manajemen penyimpanan unggahan berkas laporan.
 
-### Backend (`apps/api`)
-- **Node.js & Express.js** - Restful API Server.
-- **PostgreSQL** - Relational Database Management System.
-- **Drizzle ORM** - Modern, type-safe TypeScript ORM.
-- **Better Auth** - Sistem otentikasi komprehensif.
+### Backend & CMS (`apps/cms`)
+- **Sanity Studio** - Headless CMS terpusat dan real-time.
+- **Sanity Vision** - Plugin GROQ query tester.
 
 ---
 
@@ -36,17 +36,14 @@ RPL/
 │   │   ├── src/
 │   │   │   ├── components/ # Reusable UI components
 │   │   │   ├── pages/      # Halaman Publik (Home, Berita, Lapor, dll)
-│   │   │   └── admin/      # Halaman Admin Dashboard
+│   │   │   ├── lib/        # Konfigurasi Sanity & Firebase
+│   │   │   └── hooks/      # Custom React Hooks
 │   │   └── vite.config.js
 │   │
-│   └── api/                # Backend Express + Drizzle
-│       ├── src/
-│       │   ├── db/         # Drizzle Config & Skema Postgres
-│       │   ├── routes/     # Express API Endpoints
-│       │   ├── services/   # Business Logic
-│       │   └── auth/       # Better Auth Middleware
-│       ├── drizzle.config.ts
-│       └── package.json
+│   └── cms/                # Sanity Studio CMS
+│       ├── schemas/        # Skema konten Sanity (Berita, Laporan, dll)
+│       ├── sanity.config.js# Konfigurasi utama Sanity Studio
+│       └── sanity.cli.js
 └── README.md
 ```
 
@@ -60,7 +57,6 @@ Ikuti panduan langkah demi langkah di bawah ini untuk menjalankan proyek secara 
 Pastikan Anda sudah menginstal perangkat lunak berikut:
 - **Node.js** (Disarankan versi 18 LTS atau terbaru)
 - **Git**
-- **PostgreSQL** (Sudah terinstal dan berjalan di sistem Anda, atau Anda bisa menggunakan layanan cloud seperti Supabase/Neon)
 
 ### Langkah 2: Kloning Repositori
 Buka terminal Anda dan jalankan perintah berikut:
@@ -69,38 +65,24 @@ git clone https://github.com/adillahrn/rpl-bnn-sawahlunto.git
 cd rpl-bnn-sawahlunto
 ```
 
-### Langkah 3: Setup Database & Backend API
-Arahkan terminal Anda ke dalam folder backend:
+### Langkah 3: Setup Sanity CMS
+Arahkan terminal Anda ke dalam folder CMS:
 ```bash
-cd apps/api
+cd apps/cms
 ```
 
 1. **Instalasi Dependencies:**
    ```bash
    npm install
    ```
-2. **Siapkan Database Lokal:**
-   - Buka pgAdmin atau psql, lalu buat database kosong baru, misalnya dengan nama `bnn_sawahlunto`.
-3. **Konfigurasi Environment:**
-   Buat file bernama `.env` di dalam folder `apps/api` dan atur URL koneksi database Anda:
-   ```env
-   # Format: postgresql://[USER]:[PASSWORD]@localhost:5432/[NAMA_DATABASE]
-   DATABASE_URL=postgresql://postgres:postgres@localhost:5432/bnn_sawahlunto
-   PORT=3001
-   ```
-4. **Migrasi Skema Database:**
-   Jalankan perintah ini untuk membuat tabel-tabel secara otomatis di PostgreSQL:
+2. **Jalankan Sanity Studio:**
    ```bash
-   npx drizzle-kit push
+   npm run dev
    ```
-5. **Jalankan Server Backend:**
-   ```bash
-   npx tsx src/index.ts
-   ```
-   *(Server backend akan berjalan di http://localhost:3001)*
+   *(Sanity Studio akan berjalan di http://localhost:3333)*
 
 ### Langkah 4: Setup Frontend Web
-Buka tab terminal baru (biarkan server backend tetap berjalan), lalu arahkan ke folder frontend:
+Buka tab terminal baru (biarkan server Sanity Studio tetap berjalan), lalu arahkan ke folder frontend:
 ```bash
 cd apps/web
 ```
@@ -109,21 +91,33 @@ cd apps/web
    ```bash
    npm install
    ```
-2. **Jalankan Server Frontend:**
+2. **Konfigurasi Environment:**
+   Buat file bernama `.env` di dalam folder `apps/web` (atau copy dari `.env.example` jika tersedia) dan masukkan kredensial Sanity dan Firebase Anda:
+   ```env
+   VITE_SANITY_PROJECT_ID='ID_PROJECT_SANITY'
+   VITE_SANITY_DATASET='production'
+   VITE_SANITY_TOKEN='TOKEN_SANITY'
+
+   VITE_FIREBASE_API_KEY='API_KEY_FIREBASE'
+   VITE_FIREBASE_AUTH_DOMAIN='domain.firebaseapp.com'
+   VITE_FIREBASE_PROJECT_ID='ID_PROJECT_FIREBASE'
+   VITE_FIREBASE_STORAGE_BUCKET='bucket.firebasestorage.app'
+   VITE_FIREBASE_MESSAGING_SENDER_ID='SENDER_ID'
+   VITE_FIREBASE_APP_ID='APP_ID'
+   ```
+3. **Jalankan Server Frontend:**
    ```bash
    npm run dev
    ```
    *(Aplikasi web akan terbuka secara otomatis di browser pada http://localhost:5173)*
 
-> **Penting**: Server Vite telah dikonfigurasi (*proxy*) sehingga semua _request_ ke `/api` dari frontend secara otomatis diarahkan ke backend di `localhost:3001`. Anda tidak akan mengalami masalah CORS selama pengembangan lokal.
-
 ---
 
-## 🔑 Akses Halaman Admin
-Untuk mengakses dasbor CMS/Admin, Anda dapat membuka URL berikut di browser:
-**[http://localhost:5173/admin](http://localhost:5173/admin)**
+## 🔑 Akses Halaman Admin (CMS)
+Untuk mengakses dasbor manajemen konten, Anda dapat membuka Sanity Studio di URL berikut:
+**[http://localhost:3333](http://localhost:3333)**
 
-*(Sistem otentikasi login admin sedang disiapkan menggunakan Better Auth)*
+*(Anda harus memiliki akses dari administrator proyek untuk login ke dalam Sanity Workspace)*
 
 ---
 

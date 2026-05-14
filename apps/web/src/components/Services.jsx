@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Link } from 'react-router-dom';
 
 const services = [
   {
@@ -133,15 +132,17 @@ export default function Services() {
               }`}>
                 {svc.desc}
               </p>
-              <Link
+              <a
                 className={`inline-flex items-center gap-2 font-label-bold text-label-bold group ${
                   idx === activeIndex ? 'text-white hover:text-inverse-primary' : 'text-primary hover:underline'
                 }`}
-                to="/layanan"
+                href={`https://wa.me/6281364645537?text=${encodeURIComponent(`Halo BNN Kota Sawahlunto, saya ingin bertanya tentang layanan ${svc.title}.`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                Info Detail
+                Selengkapnya
                 <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
-              </Link>
+              </a>
             </div>
           ))}
         </div>

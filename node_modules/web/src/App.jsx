@@ -10,6 +10,7 @@ import Home from './pages/Home';
 import NewsPage from './pages/NewsPage';
 import NewsDetail from './pages/NewsDetail';
 import ServicesPage from './pages/ServicesPage';
+import ServiceDetailPage from './pages/ServiceDetailPage';
 import ReportPage from './pages/ReportPage';
 import InformationPage from './pages/InformationPage';
 import InformationDetail from './pages/InformationDetail';
@@ -32,6 +33,7 @@ function App() {
             <Route path="berita" element={<NewsPage />} />
             <Route path="berita/:slug" element={<NewsDetail />} />
             <Route path="layanan" element={<ServicesPage />} />
+            <Route path="layanan/:slug" element={<ServiceDetailPage />} />
             <Route path="lapor" element={<ReportPage />} />
             <Route path="informasi" element={<InformationPage />} />
             <Route path="informasi/:slug" element={<InformationDetail />} />

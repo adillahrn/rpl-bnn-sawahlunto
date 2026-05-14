@@ -13,3 +13,12 @@
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* Hide browser native password reveal button (Edge/Chrome) */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+input::-webkit-credentials-auto-fill-button {
+  display: none !important;
+}

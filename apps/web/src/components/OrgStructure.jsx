@@ -4,27 +4,27 @@ const members = [
   {
     role: 'Kepala BNN Kota Sawahlunto',
     name: 'Drs. Ahmad Fauzi, M.Si',
-    photo: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop&crop=face',
+    photo: '',
   },
   {
     role: 'Kepala Subbagian Umum',
     name: 'Siti Nurhaliza, S.E.',
-    photo: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop&crop=face',
+    photo: '',
   },
   {
     role: 'Kepala Seksi P2M',
     name: 'Budi Santoso, S.H.',
-    photo: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face',
+    photo: '',
   },
   {
     role: 'Kepala Seksi Rehabilitasi',
     name: 'Dr. Ratna Dewi, M.Kes',
-    photo: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=400&fit=crop&crop=face',
+    photo: '',
   },
   {
     role: 'Kepala Seksi Pemberantasan',
     name: 'Irfan Hakim, S.H., M.H.',
-    photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face',
+    photo: '',
   },
 ];
 

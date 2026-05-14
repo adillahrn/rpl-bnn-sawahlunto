@@ -17,7 +17,7 @@ export default function Profile() {
             <img
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               alt="Kantor BNN Kota Sawahlunto"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxKtovfF-cRzsGYOfUdZtjrajj4NUv5Uo5zZU10m_m83RlkUqNape7rY-F8QG2M0X7mSnpCA6WocscAMKtUUpQjd_CCti4fL2tLb6n3W0WgLL83lcEpTIgw09o1ejT4P1EMZD5IxhIMf2ix7W6tJ4MR_swAVIGsBM0bFGbsHE_dep65FBV8JHLb9rxIW-yO5fe825GTNB406POGVj9iqBo7IMjP-49ccKktZ6iwaBj8-6oh3LzXr57yjBREs5MjMDSEUwmi5CmkrSt"
+              src="https://sijunjung.pom.go.id/berita/loka-pengawas-obat-dan-makanan-di-kabupaten-sijunjung-melakukan-koordinasi-strategis-dengan-badan-narkotika-nasional-bnn-di-kota-sawahlunto"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-primary/30 via-transparent to-transparent"></div>
             <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">

@@ -111,7 +111,7 @@ export default function AdminDashboard() {
                       <span className={`px-2.5 py-1 rounded-full text-xs font-label-bold ${
                         report.status === 'Pending' ? 'bg-error-container text-on-error-container' :
                         report.status === 'Investigating' ? 'bg-secondary-container text-on-secondary-container' :
-                        'bg-primary-container text-primary'
+                        'bg-primary-container text-white'
                       }`}>
                         {report.status}
                       </span>

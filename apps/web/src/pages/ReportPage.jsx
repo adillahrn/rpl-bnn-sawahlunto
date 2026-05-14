@@ -64,7 +64,15 @@ export default function ReportPage() {
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0]);
+      const selectedFile = e.target.files[0];
+      const maxSize = 20 * 1024 * 1024; // 20MB in bytes
+      if (selectedFile.size > maxSize) {
+        alert('Ukuran file terlalu besar. Maksimal ukuran file adalah 20MB.');
+        e.target.value = '';
+        setFile(null);
+        return;
+      }
+      setFile(selectedFile);
     }
   };
 
@@ -278,7 +286,7 @@ export default function ReportPage() {
                 {!file && (
                   <p className="font-body-small text-body-small text-outline text-xs sm:text-sm">Mendukung Foto (JPG, PNG), Video (MP4) maks 20MB</p>
                 )}
-                <input className="hidden" type="file" onChange={handleFileChange} />
+                <input className="hidden" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime" onChange={handleFileChange} />
               </label>
             </div>
 

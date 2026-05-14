@@ -111,7 +111,7 @@ export default function AdminReports() {
                         className={`px-2.5 py-1 rounded-full text-xs font-label-bold border-0 cursor-pointer ${
                           report.status === 'Pending' ? 'bg-error-container text-on-error-container' :
                           report.status === 'Investigating' ? 'bg-secondary-container text-on-secondary-container' :
-                          'bg-primary-container text-primary'
+                          'bg-primary-container text-white'
                         }`}
                       >
                         <option value="Pending">Pending</option>
@@ -176,7 +176,7 @@ export default function AdminReports() {
                     className={`px-3 py-1 rounded-full text-sm font-label-bold border-0 cursor-pointer mt-1 ${
                       selectedReport.status === 'Pending' ? 'bg-error-container text-on-error-container' :
                       selectedReport.status === 'Investigating' ? 'bg-secondary-container text-on-secondary-container' :
-                      'bg-primary-container text-primary'
+                      'bg-primary-container text-white'
                     }`}
                   >
                     <option value="Pending">Pending</option>

@@ -1,6 +1,13 @@
 import { useState, useEffect, createContext, useContext } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth, loginWithGoogle as firebaseLogin, logout as firebaseLogout } from '../lib/firebase';
+import {
+  auth,
+  loginWithGoogle as firebaseLoginGoogle,
+  loginWithEmail as firebaseLoginEmail,
+  registerWithEmail as firebaseRegisterEmail,
+  resetPassword as firebaseResetPassword,
+  logout as firebaseLogout
+} from '../lib/firebase';
 import { client } from '../lib/sanity';
 
 const AuthContext = createContext({});
@@ -47,9 +54,37 @@ export const AuthProvider = ({ children }) => {
 
   const loginWithGoogle = async () => {
     try {
-      await firebaseLogin();
+      await firebaseLoginGoogle();
     } catch (error) {
       console.error(error);
+      throw error;
+    }
+  };
+
+  const loginWithEmail = async (email, password) => {
+    try {
+      await firebaseLoginEmail(email, password);
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  };
+
+  const registerWithEmail = async (email, password) => {
+    try {
+      await firebaseRegisterEmail(email, password);
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  };
+
+  const forgotPassword = async (email) => {
+    try {
+      await firebaseResetPassword(email);
+    } catch (error) {
+      console.error(error);
+      throw error;
     }
   };
 
@@ -62,10 +97,11 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, adminRole, loading, loginWithGoogle, logout }}>
+    <AuthContext.Provider value={{ user, adminRole, loading, loginWithGoogle, loginWithEmail, registerWithEmail, forgotPassword, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
 export const useAuth = () => useContext(AuthContext);
+

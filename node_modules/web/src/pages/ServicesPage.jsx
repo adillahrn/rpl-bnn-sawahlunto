@@ -76,7 +76,12 @@ export default function ServicesPage() {
             </div>
             <h2 className="font-headline-card text-headline-card text-on-surface mb-2 sm:mb-3">{svc.title}</h2>
             <p className="font-body-small text-body-small text-on-surface-variant mb-6 sm:mb-8 flex-grow">{svc.desc}</p>
-            <a className={`font-label-bold text-label-bold ${svc.linkColor} flex items-center gap-2 mt-auto group`} href="#">
+            <a
+              className={`font-label-bold text-label-bold ${svc.linkColor} flex items-center gap-2 mt-auto group`}
+              href={`https://wa.me/6281364645537?text=${encodeURIComponent(`Halo BNN Kota Sawahlunto, saya ingin bertanya tentang layanan ${svc.title}.`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Selengkapnya
               <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
             </a>
@@ -91,9 +96,15 @@ export default function ServicesPage() {
         <p className="font-body-main text-body-main mb-6 md:mb-8 max-w-2xl relative z-10 text-primary-fixed">
           Tim pelayanan kami siap membantu menjawab pertanyaan Anda mengenai prosedur, jadwal, dan persyaratan layanan BNN Kota Sawahlunto.
         </p>
-        <button className="bg-secondary-container text-on-secondary-container font-label-bold text-label-bold px-6 sm:px-8 py-3 sm:py-4 rounded-xl hover:bg-secondary-fixed transition-colors shadow-lg relative z-10">
-          Hubungi Pusat Bantuan
-        </button>
+        <a
+          href="https://wa.me/6281364645537?text=Halo%20BNN%20Kota%20Sawahlunto%2C%20saya%20ingin%20bertanya%20tentang%20layanan%20yang%20tersedia."
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 bg-secondary-container text-on-secondary-container font-label-bold text-label-bold px-6 sm:px-8 py-3 sm:py-4 rounded-xl hover:bg-secondary-fixed transition-colors shadow-lg relative z-10"
+        >
+          <span className="material-symbols-outlined text-[20px]">chat</span>
+          Hubungi via WhatsApp
+        </a>
       </section>
     </main>
   );

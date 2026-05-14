@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 export default function ServicesPage() {
   const services = [
     {
@@ -7,6 +9,7 @@ export default function ServicesPage() {
       iconBg: 'bg-primary-fixed',
       iconColor: 'text-primary',
       linkColor: 'text-primary hover:text-primary-container',
+      slug: 'tes-urine',
     },
     {
       icon: 'healing',
@@ -15,6 +18,7 @@ export default function ServicesPage() {
       iconBg: 'bg-primary-fixed',
       iconColor: 'text-primary',
       linkColor: 'text-primary hover:text-primary-container',
+      slug: 'rehabilitasi',
     },
     {
       icon: 'campaign',
@@ -23,6 +27,7 @@ export default function ServicesPage() {
       iconBg: 'bg-primary-fixed',
       iconColor: 'text-primary',
       linkColor: 'text-primary hover:text-primary-container',
+      slug: 'sosialisasi-p4gn',
     },
     {
       icon: 'description',
@@ -31,6 +36,7 @@ export default function ServicesPage() {
       iconBg: 'bg-primary-fixed',
       iconColor: 'text-primary',
       linkColor: 'text-primary hover:text-primary-container',
+      slug: 'penerbitan-skhpn',
     },
     {
       icon: 'report_problem',
@@ -40,6 +46,7 @@ export default function ServicesPage() {
       iconColor: 'text-on-secondary-container',
       linkColor: 'text-secondary hover:text-on-secondary-container',
       hasAccent: true,
+      slug: 'pengaduan-masyarakat',
     },
     {
       icon: 'psychology',
@@ -48,6 +55,7 @@ export default function ServicesPage() {
       iconBg: 'bg-primary-fixed',
       iconColor: 'text-primary',
       linkColor: 'text-primary hover:text-primary-container',
+      slug: 'konseling-adiksi',
     },
   ];
 
@@ -76,15 +84,13 @@ export default function ServicesPage() {
             </div>
             <h2 className="font-headline-card text-headline-card text-on-surface mb-2 sm:mb-3">{svc.title}</h2>
             <p className="font-body-small text-body-small text-on-surface-variant mb-6 sm:mb-8 flex-grow">{svc.desc}</p>
-            <a
+            <Link
               className={`font-label-bold text-label-bold ${svc.linkColor} flex items-center gap-2 mt-auto group`}
-              href={`https://wa.me/6281364645537?text=${encodeURIComponent(`Halo BNN Kota Sawahlunto, saya ingin bertanya tentang layanan ${svc.title}.`)}`}
-              target="_blank"
-              rel="noopener noreferrer"
+              to={`/layanan/${svc.slug}`}
             >
               Selengkapnya
               <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
-            </a>
+            </Link>
           </article>
         ))}
       </section>

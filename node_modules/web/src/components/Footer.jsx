@@ -12,11 +12,11 @@ export default function Footer() {
   ];
 
   const services = [
-    'Tes Urine',
-    'Rehabilitasi',
-    'Sosialisasi P4GN',
-    'Penerbitan SKHPN',
-    'Konseling Adiksi',
+    { to: '/layanan#top', label: 'Tes Urine' },
+    { to: '/layanan#top', label: 'Rehabilitasi' },
+    { to: '/layanan#top', label: 'Sosialisasi P4GN' },
+    { to: '/layanan#top', label: 'Penerbitan SKHPN' },
+    { to: '/layanan#top', label: 'Konseling Adiksi' },
   ];
 
   return (
@@ -81,10 +81,10 @@ export default function Footer() {
             <h3 className="text-sm font-bold uppercase tracking-wider text-white/80 mb-5">Layanan</h3>
             <ul className="flex flex-col gap-3">
               {services.map((svc) => (
-                <li key={svc}>
-                  <Link to="/layanan" className="text-sm text-white/50 hover:text-secondary-container transition-colors duration-300 flex items-center gap-2 group">
+                <li key={svc.label}>
+                  <Link to={svc.to} className="text-sm text-white/50 hover:text-secondary-container transition-colors duration-300 flex items-center gap-2 group">
                     <span className="w-1.5 h-1.5 rounded-full bg-primary/50 group-hover:bg-secondary-container transition-colors"></span>
-                    {svc}
+                    {svc.label}
                   </Link>
                 </li>
               ))}

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import foto from "../assets/bnn.jpg";
+import foto from "../assets/hero.png.png";
 
 export default function Hero() {
   return (

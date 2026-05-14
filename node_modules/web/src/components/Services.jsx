@@ -1,35 +1,42 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { Link } from 'react-router-dom';
 
 const services = [
   {
     icon: 'science',
     title: 'Tes Urine',
     desc: 'Layanan deteksi dini penyalahgunaan narkotika melalui pengujian sampel urine secara akurat, profesional, dan rahasia.',
+    slug: 'tes-urine',
   },
   {
     icon: 'healing',
     title: 'Rehabilitasi',
     desc: 'Program pemulihan medis dan sosial terpadu bagi pecandu dan korban penyalahgunaan narkotika.',
+    slug: 'rehabilitasi',
   },
   {
     icon: 'campaign',
     title: 'Sosialisasi P4GN',
     desc: 'Penyuluhan dan edukasi komprehensif mengenai bahaya narkoba untuk sekolah, instansi, dan masyarakat umum.',
+    slug: 'sosialisasi-p4gn',
   },
   {
     icon: 'description',
     title: 'Penerbitan SKHPN',
     desc: 'Layanan resmi penerbitan Surat Keterangan Hasil Pemeriksaan Narkotika untuk keperluan administrasi dan legal.',
+    slug: 'penerbitan-skhpn',
   },
   {
     icon: 'report_problem',
     title: 'Pengaduan Masyarakat',
     desc: 'Saluran aman dan terpercaya untuk melaporkan indikasi penyalahgunaan atau peredaran gelap narkotika.',
+    slug: 'pengaduan-masyarakat',
   },
   {
     icon: 'psychology',
     title: 'Konseling Adiksi',
     desc: 'Layanan konsultasi psikologis gratis bagi individu maupun keluarga terkait masalah adiksi.',
+    slug: 'konseling-adiksi',
   },
 ];
 
@@ -69,7 +76,7 @@ export default function Services() {
   }, [activeIndex]);
 
   return (
-    <section className="py-10 sm:py-16 md:py-xl">
+    <section id="top" className="py-10 sm:py-16 md:py-xl">
       <div className="max-w-container-max mx-auto px-4 sm:px-6 md:px-lg">
         {/* Header */}
         <div className="flex items-end justify-between mb-8 sm:mb-12">
@@ -132,17 +139,15 @@ export default function Services() {
               }`}>
                 {svc.desc}
               </p>
-              <a
+              <Link
                 className={`inline-flex items-center gap-2 font-label-bold text-label-bold group ${
                   idx === activeIndex ? 'text-white hover:text-inverse-primary' : 'text-primary hover:underline'
                 }`}
-                href={`https://wa.me/6281364645537?text=${encodeURIComponent(`Halo BNN Kota Sawahlunto, saya ingin bertanya tentang layanan ${svc.title}.`)}`}
-                target="_blank"
-                rel="noopener noreferrer"
+                to={`/layanan/${svc.slug}`}
               >
                 Selengkapnya
                 <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
-              </a>
+              </Link>
             </div>
           ))}
         </div>

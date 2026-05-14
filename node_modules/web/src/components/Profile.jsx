@@ -1,3 +1,5 @@
+import foto from "../assets/visi.png";
+
 export default function Profile() {
   return (
     <section className="py-10 sm:py-16 md:py-xl bg-surface-container-low">
@@ -16,8 +18,8 @@ export default function Profile() {
           <div className="rounded-2xl sm:rounded-3xl overflow-hidden shadow-[0px_10px_25px_rgba(13,38,194,0.08)] border border-surface-container h-[280px] sm:h-[340px] lg:h-full relative group">
             <img
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              alt="Kantor BNN Kota Sawahlunto"
-              src="https://sijunjung.pom.go.id/berita/loka-pengawas-obat-dan-makanan-di-kabupaten-sijunjung-melakukan-koordinasi-strategis-dengan-badan-narkotika-nasional-bnn-di-kota-sawahlunto"
+              alt="BNN Kota Sawahlunto"
+              src={foto}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-primary/30 via-transparent to-transparent"></div>
             <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">

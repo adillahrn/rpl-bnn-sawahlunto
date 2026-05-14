@@ -3,28 +3,28 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 const members = [
   {
     role: 'Kepala BNN Kota Sawahlunto',
-    name: 'Drs. Ahmad Fauzi, M.Si',
-    photo: '',
+    name: 'AKBP. Didit Bagus Wicaksono',
+    photo: '/src/assets/KepalaBNN.png.png',
   },
   {
     role: 'Kepala Subbagian Umum',
-    name: 'Siti Nurhaliza, S.E.',
-    photo: '',
+    name: 'Ilham, S.IP.',
+    photo: '/src/assets/KasubbagUmum.png',
   },
   {
     role: 'Kepala Seksi P2M',
-    name: 'Budi Santoso, S.H.',
-    photo: '',
+    name: 'Hesti Damayanti, S.I.Kom.',
+    photo: '/src/assets/KasiP2M.png',
   },
   {
     role: 'Kepala Seksi Rehabilitasi',
-    name: 'Dr. Ratna Dewi, M.Kes',
-    photo: '',
+    name: 'Lusiana Sari Handayani, S.E., M.Si.',
+    photo: '/src/assets/KasiRehabilitasi.png',
   },
   {
     role: 'Kepala Seksi Pemberantasan',
-    name: 'Irfan Hakim, S.H., M.H.',
-    photo: '',
+    name: 'Andrico, S.H.',
+    photo: '/src/assets/KasiPemberantasan.png',
   },
 ];
 

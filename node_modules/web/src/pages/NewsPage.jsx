@@ -113,7 +113,7 @@ export default function NewsPage() {
                       </span>
                       <span className="font-body-small text-body-small text-on-surface-variant text-xs">{formatDate(item.publishedAt)}</span>
                     </div>
-                    <h3 className="font-headline-card text-[16px] sm:text-headline-card text-on-surface mb-2 sm:mb-3 group-hover:text-primary transition-colors leading-snug">
+                    <h3 className="font-headline-card text-[16px] sm:text-headline-card text-on-surface mb-2 sm:mb-3 group-hover:text-primary transition-colors leading-snug line-clamp-3">
                       {item.title}
                     </h3>
                     <p className="font-body-small text-body-small text-on-surface-variant line-clamp-2 mb-3 sm:mb-4">

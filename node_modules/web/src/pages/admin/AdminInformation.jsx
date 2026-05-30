@@ -4,6 +4,7 @@ import { client, writeClient, urlFor } from '../../lib/sanity';
 export default function AdminInformation() {
   const [infoList, setInfoList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
   
   // Form State
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -142,7 +143,7 @@ export default function AdminInformation() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="font-headline-section text-2xl text-on-surface">Kelola Informasi</h1>
           <p className="text-on-surface-variant mt-1">Kelola publikasi dan informasi BNN</p>
@@ -150,7 +151,7 @@ export default function AdminInformation() {
         {!isFormOpen && (
           <button 
             onClick={() => { resetForm(); setIsFormOpen(true); }}
-            className="bg-primary text-on-primary px-4 py-2 rounded-lg font-label-bold flex items-center gap-2 hover:bg-primary-fixed-variant transition-colors"
+            className="bg-primary text-on-primary px-4 py-2 rounded-lg font-label-bold flex items-center gap-2 hover:bg-primary-fixed-variant transition-colors whitespace-nowrap"
           >
             <span className="material-symbols-outlined">add</span> Tambah Informasi
           </button>
@@ -216,6 +217,19 @@ export default function AdminInformation() {
         </div>
       ) : (
         <div className="bg-surface rounded-2xl shadow-sm border border-outline-variant/30 overflow-hidden">
+          {/* Search Bar */}
+          <div className="p-4 border-b border-outline-variant/20">
+            <div className="relative max-w-sm">
+              <input
+                type="text"
+                placeholder="Cari informasi..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-2 pl-10 pr-4 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+              />
+              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+            </div>
+          </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -231,27 +245,41 @@ export default function AdminInformation() {
                   <tr>
                     <td colSpan="4" className="py-8 text-center text-on-surface-variant">Memuat data...</td>
                   </tr>
-                ) : infoList.length === 0 ? (
+                ) : infoList.filter(item =>
+                    item.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    item.category?.toLowerCase().includes(searchQuery.toLowerCase())
+                  ).length === 0 ? (
                   <tr>
-                    <td colSpan="4" className="py-8 text-center text-on-surface-variant">Belum ada informasi.</td>
+                    <td colSpan="4" className="py-8 text-center text-on-surface-variant">
+                      {searchQuery ? `Tidak ada informasi yang cocok dengan "${searchQuery}"` : 'Belum ada informasi.'}
+                    </td>
                   </tr>
                 ) : (
-                  infoList.map((item) => (
+                  infoList
+                    .filter(item =>
+                      item.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      item.category?.toLowerCase().includes(searchQuery.toLowerCase())
+                    )
+                    .map((item) => (
                     <tr key={item._id} className="border-b border-outline-variant/30 hover:bg-surface-container-lowest">
                       <td className="py-3 px-4">
                         {item.image && (
                           <img src={urlFor(item.image).width(100).height(60).url()} alt={item.title} className="w-20 h-12 object-cover rounded" />
                         )}
                       </td>
-                      <td className="py-3 px-4 font-label-bold text-on-surface">{item.title}</td>
+                      <td className="py-3 px-4 font-label-bold text-on-surface max-w-xs">
+                        <span className="line-clamp-2">{item.title}</span>
+                      </td>
                       <td className="py-3 px-4 capitalize">{item.category}</td>
-                      <td className="py-3 px-4 text-right">
-                        <button onClick={() => handleEdit(item)} className="p-2 text-primary hover:bg-primary-container rounded-lg mr-2">
-                          <span className="material-symbols-outlined text-[20px]">edit</span>
-                        </button>
-                        <button onClick={() => handleDelete(item._id)} className="p-2 text-error hover:bg-error-container rounded-lg">
-                          <span className="material-symbols-outlined text-[20px]">delete</span>
-                        </button>
+                      <td className="py-3 px-4">
+                        <div className="flex items-center gap-1 justify-end">
+                          <button onClick={() => handleEdit(item)} className="p-2 text-primary hover:bg-primary-container rounded-lg transition-colors" title="Edit">
+                            <span className="material-symbols-outlined text-[20px]">edit</span>
+                          </button>
+                          <button onClick={() => handleDelete(item._id)} className="p-2 text-error hover:bg-error-container rounded-lg transition-colors" title="Hapus">
+                            <span className="material-symbols-outlined text-[20px]">delete</span>
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))

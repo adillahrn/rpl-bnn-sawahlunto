@@ -18,6 +18,7 @@ export default function InformationPage() {
   const [openFaq, setOpenFaq] = useState(null);
   const [items, setItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const loadData = async () => {
@@ -34,12 +35,16 @@ export default function InformationPage() {
     loadData();
   }, []);
 
-  const filtered = activeFilter === 'Semua' 
-    ? items 
-    : items.filter(i => {
-        const type = i.mediaType === 'youtube' || i.mediaType === 'video' ? 'Video' : 'Artikel';
-        return type === activeFilter;
-      });
+  const filtered = items.filter(i => {
+    const matchesFilter = activeFilter === 'Semua' || (() => {
+      const type = i.mediaType === 'youtube' || i.mediaType === 'video' ? 'Video' : 'Artikel';
+      return type === activeFilter;
+    })();
+    const matchesSearch = !searchQuery ||
+      i.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      i.excerpt?.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesFilter && matchesSearch;
+  });
 
   const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -57,23 +62,38 @@ export default function InformationPage() {
           <p className="font-body-main text-body-main text-on-surface-variant mt-1 sm:mt-2">Edukasi dan informasi seputar narkotika untuk masyarakat</p>
         </div>
 
-        {/* Filter Pills */}
-        <div className="flex items-center gap-2 mb-8 md:mb-10 overflow-x-auto pb-1">
-          {filters.map((f) => (
-            <button
-              key={f}
-              onClick={() => setActiveFilter(f)}
-              className={`px-4 py-2 rounded-full font-label-bold text-label-bold whitespace-nowrap transition-all active:scale-95 flex items-center gap-1.5 ${
-                activeFilter === f
-                  ? 'bg-primary text-on-primary shadow-md'
-                  : 'bg-surface-container-lowest border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
-              }`}
-            >
-              {f === 'Video' && <span className="material-symbols-outlined text-[16px]">play_circle</span>}
-              {f === 'Artikel' && <span className="material-symbols-outlined text-[16px]">article</span>}
-              {f}
-            </button>
-          ))}
+        {/* Filter + Search Row */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 md:mb-10">
+          {/* Filter Pills */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
+            {filters.map((f) => (
+              <button
+                key={f}
+                onClick={() => setActiveFilter(f)}
+                className={`px-4 py-2 rounded-full font-label-bold text-label-bold whitespace-nowrap transition-all active:scale-95 flex items-center gap-1.5 ${
+                  activeFilter === f
+                    ? 'bg-primary text-on-primary shadow-md'
+                    : 'bg-surface-container-lowest border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
+                }`}
+              >
+                {f === 'Video' && <span className="material-symbols-outlined text-[16px]">play_circle</span>}
+                {f === 'Artikel' && <span className="material-symbols-outlined text-[16px]">article</span>}
+                {f}
+              </button>
+            ))}
+          </div>
+
+          {/* Search */}
+          <div className="w-full sm:w-auto relative shrink-0">
+            <input
+              type="text"
+              placeholder="Cari informasi..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full sm:w-72 md:w-80 bg-surface-container-lowest border border-outline-variant rounded-full py-2.5 sm:py-3 pl-11 sm:pl-12 pr-5 sm:pr-6 text-on-surface text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all shadow-sm"
+            />
+            <span className="material-symbols-outlined absolute left-3.5 sm:left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px] sm:text-[24px]">search</span>
+          </div>
         </div>
 
         {/* Cards Grid */}
@@ -99,11 +119,13 @@ export default function InformationPage() {
                           ? 'bg-surface-tint/10 text-surface-tint'
                           : 'bg-primary-container/10 text-primary'
                       }`}>
-                        {isVideo ? '▶ Video' : (item.category || 'Artikel')}
+                        {isVideo ? '▶ Video' :    (item.category
+                                  ? item.category.charAt(0).toUpperCase() + item.category.slice(1)
+                                  : 'Artikel')}
                       </span>
                       <span className="font-body-small text-body-small text-on-surface-variant text-xs">{formatDate(item.publishedAt)}</span>
                     </div>
-                    <h3 className="font-headline-card text-[16px] sm:text-headline-card text-on-surface mb-2 sm:mb-3 group-hover:text-primary transition-colors leading-snug">{item.title}</h3>
+                    <h3 className="font-headline-card text-[16px] sm:text-headline-card text-on-surface mb-2 sm:mb-3 group-hover:text-primary transition-colors leading-snug line-clamp-3">{item.title}</h3>
                     <p className="font-body-small text-body-small text-on-surface-variant line-clamp-2 mb-3 sm:mb-4">{item.excerpt}</p>
                     <Link
                       to={`/informasi/${item.slug?.current}`}

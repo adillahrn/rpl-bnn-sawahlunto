@@ -8,6 +8,7 @@ export default function ReportPage() {
   const [successMessage, setSuccessMessage] = useState('');
   const [file, setFile] = useState(null);
   const [phone, setPhone] = useState('');
+  const [isDragging, setIsDragging] = useState(false);
   
   // Location Autocomplete State
   const [location, setLocation] = useState('');
@@ -62,18 +63,45 @@ export default function ReportPage() {
     setShowLocationDropdown(false);
   };
 
+  const validateAndSetFile = (selectedFile) => {
+    if (!selectedFile) return;
+    const maxSize = 20 * 1024 * 1024; // 20MB in bytes
+    if (selectedFile.size > maxSize) {
+      alert('Ukuran file terlalu besar. Maksimal ukuran file adalah 20MB.');
+      return;
+    }
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'video/mp4', 'video/quicktime'];
+    if (!allowedTypes.includes(selectedFile.type)) {
+      alert('Format file tidak didukung. Gunakan JPG, PNG, WEBP, atau MP4.');
+      return;
+    }
+    setFile(selectedFile);
+  };
+
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
-      const selectedFile = e.target.files[0];
-      const maxSize = 20 * 1024 * 1024; // 20MB in bytes
-      if (selectedFile.size > maxSize) {
-        alert('Ukuran file terlalu besar. Maksimal ukuran file adalah 20MB.');
-        e.target.value = '';
-        setFile(null);
-        return;
-      }
-      setFile(selectedFile);
+      validateAndSetFile(e.target.files[0]);
     }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    const droppedFile = e.dataTransfer.files[0];
+    validateAndSetFile(droppedFile);
   };
 
   const handleSubmit = async (e) => {
@@ -276,18 +304,42 @@ export default function ReportPage() {
             {/* File Upload */}
             <div className="space-y-2">
               <label className="font-label-bold text-label-bold text-on-surface-variant block">Bukti Pendukung <span className="font-normal text-on-surface-variant/80 text-xs">(Opsional)</span></label>
-              <label className="w-full border-2 border-dashed border-outline-variant/60 rounded-xl p-5 sm:p-8 text-center hover:bg-surface hover:border-primary transition-colors cursor-pointer group block">
-                <div className="flex justify-center mb-3 text-outline group-hover:text-primary transition-colors">
-                  <span className="material-symbols-outlined text-3xl sm:text-4xl">{file ? 'check_circle' : 'cloud_upload'}</span>
-                </div>
-                <p className="font-label-bold text-label-bold text-on-surface mb-1 text-sm">
-                  {file ? file.name : 'Pilih file atau seret ke sini'}
-                </p>
-                {!file && (
-                  <p className="font-body-small text-body-small text-outline text-xs sm:text-sm">Mendukung Foto (JPG, PNG), Video (MP4) maks 20MB</p>
-                )}
-                <input className="hidden" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime" onChange={handleFileChange} />
-              </label>
+              <div
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                className={`w-full border-2 border-dashed rounded-xl p-5 sm:p-8 text-center transition-colors relative ${
+                  isDragging
+                    ? 'border-primary bg-primary/5 scale-[1.01]'
+                    : file
+                    ? 'border-primary/50 bg-primary/5'
+                    : 'border-outline-variant/60 hover:bg-surface hover:border-primary'
+                }`}
+              >
+                <label className="cursor-pointer block">
+                  <div className={`flex justify-center mb-3 transition-colors ${isDragging ? 'text-primary' : file ? 'text-primary' : 'text-outline'}`}>
+                    <span className="material-symbols-outlined text-3xl sm:text-4xl">
+                      {isDragging ? 'file_download' : file ? 'check_circle' : 'cloud_upload'}
+                    </span>
+                  </div>
+                  <p className="font-label-bold text-label-bold text-on-surface mb-1 text-sm">
+                    {isDragging ? 'Lepaskan untuk mengunggah' : file ? file.name : 'Pilih file atau seret ke sini'}
+                  </p>
+                  {!file && !isDragging && (
+                    <p className="font-body-small text-body-small text-outline text-xs sm:text-sm">Mendukung Foto (JPG, JPEG, PNG), Video (MP4) maks 20MB</p>
+                  )}
+                  {file && (
+                    <button
+                      type="button"
+                      onClick={(e) => { e.preventDefault(); setFile(null); }}
+                      className="mt-2 text-xs text-error hover:underline"
+                    >
+                      Hapus file
+                    </button>
+                  )}
+                  <input className="hidden" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime" onChange={handleFileChange} />
+                </label>
+              </div>
             </div>
 
             {/* Submit Action */}

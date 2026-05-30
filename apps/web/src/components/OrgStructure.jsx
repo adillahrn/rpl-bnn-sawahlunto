@@ -1,30 +1,35 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import kepalaBNNPhoto from '../assets/kepalaBNN.png';
+import kasubbagUmumPhoto from '../assets/kasubbag_umum.png';
+import ketuaP2MPhoto from '../assets/ketua_p2m.png';
+import ketuaRehabPhoto from '../assets/ketua_rehab.png';
+import ketuaPemberantasanPhoto from '../assets/ketua_pemberantasan.png';
 
 const members = [
   {
     role: 'Kepala BNN Kota Sawahlunto',
     name: 'AKBP. Didit Bagus Wicaksono',
-    photo: '/src/assets/kepalaBNN.png',
+    photo: kepalaBNNPhoto,
   },
   {
     role: 'Kepala Subbagian Umum',
     name: 'Laura Susanty, S.E',
-    photo: '/src/assets/kasubbag_umum.png',
+    photo: kasubbagUmumPhoto,
   },
   {
     role: 'Kepala Seksi P2M',
     name: 'Hesti Dhamayanti, S.Kom.',
-    photo: '/src/assets/ketua_p2m.png',
+    photo: ketuaP2MPhoto,
   },
   {
     role: 'Kepala Seksi Rehabilitasi',
     name: 'Muhammad Rais, S.Sos',
-    photo: '/src/assets/ketua_rehab.png',
+    photo: ketuaRehabPhoto,
   },
   {
     role: 'Kepala Seksi Pemberantasan',
     name: 'Mulyadi, S.H',
-    photo: '/src/assets/ketua_pemberantasan.png',
+    photo: ketuaPemberantasanPhoto,
   },
 ];
 

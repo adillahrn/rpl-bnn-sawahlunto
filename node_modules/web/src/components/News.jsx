@@ -73,7 +73,7 @@ export default function News() {
                       </span>
                       <span className="font-body-small text-body-small text-on-surface-variant text-xs">{formatDate(item.publishedAt)}</span>
                     </div>
-                    <h3 className="font-headline-card text-headline-card text-on-surface mb-3 group-hover:text-primary transition-colors">{item.title}</h3>
+                    <h3 className="font-headline-card text-headline-card text-on-surface mb-3 group-hover:text-primary transition-colors line-clamp-3">{item.title}</h3>
                     <p className="font-body-small text-body-small text-on-surface-variant line-clamp-2 mb-4">{item.excerpt}</p>
                     <div className="font-label-bold text-label-bold text-primary flex items-center gap-base mt-auto group-hover:text-primary-fixed-variant transition-colors">
                       Baca Selengkapnya <span className="material-symbols-outlined text-[18px]">arrow_forward</span>

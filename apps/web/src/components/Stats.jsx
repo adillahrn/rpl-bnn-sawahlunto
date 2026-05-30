@@ -21,9 +21,9 @@ function StatCard({ icon, end, suffix = '', label, variant = 'default' }) {
     secondary: {
       container: 'bg-secondary-container text-on-secondary-container',
       overlay: 'bg-black/5',
-      icon: 'opacity-80',
-      number: '',
-      label: 'text-on-secondary-container',
+      icon: 'text-on-surface opacity-80',
+      number: 'text-on-surface',
+      label: 'text-on-surface',
     },
   };
 

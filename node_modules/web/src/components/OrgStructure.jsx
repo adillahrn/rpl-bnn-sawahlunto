@@ -4,27 +4,27 @@ const members = [
   {
     role: 'Kepala BNN Kota Sawahlunto',
     name: 'AKBP. Didit Bagus Wicaksono',
-    photo: '/src/assets/KepalaBNN.png.png',
+    photo: '/src/assets/kepalaBNN.png',
   },
   {
     role: 'Kepala Subbagian Umum',
-    name: 'Ilham, S.IP.',
-    photo: '/src/assets/KasubbagUmum.png',
+    name: 'Laura Susanty, S.E',
+    photo: '/src/assets/kasubbag_umum.png',
   },
   {
     role: 'Kepala Seksi P2M',
-    name: 'Hesti Damayanti, S.I.Kom.',
-    photo: '/src/assets/KasiP2M.png',
+    name: 'Hesti Dhamayanti, S.Kom.',
+    photo: '/src/assets/ketua_p2m.png',
   },
   {
     role: 'Kepala Seksi Rehabilitasi',
-    name: 'Lusiana Sari Handayani, S.E., M.Si.',
-    photo: '/src/assets/KasiRehabilitasi.png',
+    name: 'Muhammad Rais, S.Sos',
+    photo: '/src/assets/ketua_rehab.png',
   },
   {
     role: 'Kepala Seksi Pemberantasan',
-    name: 'Andrico, S.H.',
-    photo: '/src/assets/KasiPemberantasan.png',
+    name: 'Mulyadi, S.H',
+    photo: '/src/assets/ketua_pemberantasan.png',
   },
 ];
 

@@ -197,7 +197,7 @@ export default function ReportPage() {
                 </div>
                 <div>
                   <h4 className="font-label-bold text-label-bold text-on-surface mb-1">Alamat Kantor</h4>
-                  <p className="font-body-small text-body-small text-on-surface-variant">Jl. Sudirman No.1, Pusat Kota, Kec. Lembah Segar, Kota Sawahlunto, Sumatera Barat</p>
+                  <p className="font-body-small text-body-small text-on-surface-variant">Lubang Panjang, Kec. Barangin, Kota Sawahlunto, Sumatera Barat 27422</p>
                 </div>
               </li>
               <li className="flex items-start gap-3 sm:gap-4">

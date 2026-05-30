@@ -265,7 +265,7 @@ export default function ServiceDetailPage() {
         {/* Sidebar */}
         <div className="space-y-6">
           {/* WhatsApp CTA Card */}
-          <div className="bg-surface-container-lowest rounded-2xl p-6 sm:p-8 shadow-[0px_10px_25px_rgba(13,38,194,0.05)] border border-outline-variant/20 sticky top-28">
+          <div className="bg-surface-container-lowest rounded-2xl p-6 sm:p-8 shadow-[0px_10px_25px_rgba(13,38,194,0.05)] border border-outline-variant/20">
             <div className="text-center mb-5">
               <div className="w-14 h-14 bg-[#25D366]/10 rounded-full flex items-center justify-center mx-auto mb-3">
                 <svg className="w-7 h-7 text-[#25D366]" viewBox="0 0 24 24" fill="currentColor">
@@ -306,7 +306,7 @@ export default function ServiceDetailPage() {
                 <span className="material-symbols-outlined text-primary text-[18px] mt-0.5 shrink-0">location_on</span>
                 <div>
                   <p className="font-label-bold text-sm text-on-surface">Lokasi</p>
-                  <p className="text-on-surface-variant text-sm">Jl. Sudirman No.1, Kota Sawahlunto</p>
+                  <p className="text-on-surface-variant text-sm">Lubang Panjang, Kec. Barangin, Kota Sawahlunto, Sumatera Barat 27422</p>
                 </div>
               </li>
               <li className="flex items-start gap-3">

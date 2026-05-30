@@ -60,6 +60,25 @@ export default function NewsDetail() {
     return 'bg-surface-tint/20 text-surface-tint';
   };
 
+  const handleShare = async () => {
+  const shareData = {
+    title: news.title,
+    text: news.excerpt || news.title,
+    url: window.location.href,
+  };
+
+  try {
+    if (navigator.share) {
+      await navigator.share(shareData);
+    } else {
+      await navigator.clipboard.writeText(window.location.href);
+      alert('Link berita berhasil disalin');
+    }
+  } catch (error) {
+    console.error('Error sharing:', error);
+  }
+  };
+
   return (
     <main className="pt-20 md:pt-[100px] pb-xl px-4 sm:px-6 md:px-8 max-w-container-max mx-auto">
       {/* Breadcrumb */}
@@ -98,13 +117,50 @@ export default function NewsDetail() {
                 <p className="font-body-small text-body-small text-on-surface-variant">Admin</p>
               </div>
             </div>
-            {/* Social Share */}
-            <div className="flex items-center gap-2">
-              <span className="font-body-small text-body-small text-on-surface-variant mr-1 sm:mr-2">Bagikan:</span>
-              <button aria-label="Share" className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-colors">
-                <span className="material-symbols-outlined text-[18px]">share</span>
-              </button>
-            </div>
+            
+          {/* Social Share */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="font-body-small text-body-small text-on-surface-variant mr-1">
+              Bagikan:
+            </span>
+
+            <a
+              href={`https://wa.me/?text=${encodeURIComponent(
+                `${news.title}\n${window.location.href}`
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-8 h-8 rounded-full bg-[#25D366]/10 text-[#25D366] flex items-center justify-center hover:bg-[#25D366] hover:text-white transition-colors"
+              aria-label="Bagikan ke WhatsApp"
+            >
+              <span className="material-symbols-outlined text-[18px]">
+                chat
+              </span>
+            </a>
+
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(window.location.href);
+                alert('Link berhasil disalin');
+              }}
+              className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-colors"
+              aria-label="Salin Link"
+            >
+              <span className="material-symbols-outlined text-[18px]">
+                content_copy
+              </span>
+            </button>
+
+            <button
+              onClick={handleShare}
+              className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-colors"
+              aria-label="Share"
+            >
+              <span className="material-symbols-outlined text-[18px]">
+                share
+              </span>
+            </button>
+          </div>
           </div>
         </div>
 

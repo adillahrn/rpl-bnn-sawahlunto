@@ -166,7 +166,7 @@ export default function NewsDetail() {
 
         {/* Featured Image */}
         {news.imageUrl && (
-          <div className="w-full aspect-video sm:aspect-[21/9] rounded-xl sm:rounded-2xl overflow-hidden mb-6 md:mb-lg shadow-[0px_10px_25px_rgba(13,38,194,0.05)] bg-surface-container-high">
+          <div className="w-full aspect-[16/9] rounded-xl sm:rounded-2xl overflow-hidden rounded-xl sm:rounded-2xl overflow-hidden mb-6 md:mb-lg shadow-[0px_10px_25px_rgba(13,38,194,0.05)] bg-surface-container-high">
             <img alt={news.title} className="w-full h-full object-cover" src={news.imageUrl}/>
           </div>
         )}

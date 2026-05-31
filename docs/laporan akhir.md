@@ -173,12 +173,6 @@ erDiagram
     ADMIN {
         string uid PK
         string email
-        string password_hash
-    }
-    MASYARAKAT {
-        string id_pengunjung PK
-        string nama
-        string no_hp
     }
     NEWS {
         string _id PK
@@ -203,13 +197,9 @@ erDiagram
         datetime submittedAt
     }
     
-    ADMIN ||--o{ NEWS : "mengelola (CRUD)"
-    ADMIN ||--o{ INFORMATION : "mengelola (CRUD)"
+    ADMIN ||--o{ NEWS : "mengelola"
+    ADMIN ||--o{ INFORMATION : "mengelola"
     ADMIN ||--o{ REPORT : "memperbarui status"
-    
-    MASYARAKAT ||--o{ REPORT : "mengirim"
-    MASYARAKAT }o--o{ NEWS : "membaca"
-    MASYARAKAT }o--o{ INFORMATION : "membaca"
 ```
 
 ### b. Class Diagram
@@ -253,19 +243,19 @@ classDiagram
 Salah satu fitur paling penting di website ini adalah fitur lapor/pengaduan. Berikut adalah diagram aktivitas yang menggambarkan langkah-langkah yang dilakukan oleh masyarakat saat ingin mengirimkan laporan indikasi penyalahgunaan narkoba.
 
 ```mermaid
-activityDiagram
-    start
-    :User membuka halaman Lapor;
-    :User mengisi form (Nama, Umur, No HP, Deskripsi);
-    :User mengunggah bukti (Drag & Drop / Pilih File);
-    if (Form Valid?) then (Ya)
-        :Sistem mengunggah file ke Sanity Storage;
-        :Sistem menyimpan data laporan ke Sanity DB;
-        :Tampilkan pesan Sukses;
-    else (Tidak)
-        :Tampilkan pesan Error (Wajib Isi);
-    endif
-    stop
+flowchart TD
+    Start([Mulai]) --> A[User membuka halaman Lapor]
+    A --> B[User mengisi form: Nama, No HP, Deskripsi]
+    B --> C[User mengunggah bukti via Drag & Drop]
+    C --> D{Apakah form valid?}
+    
+    D -- Ya --> E[Sistem mengunggah gambar ke Sanity]
+    E --> F[Sistem menyimpan data ke database]
+    F --> G[Tampilkan pesan Sukses]
+    G --> End([Selesai])
+    
+    D -- Tidak --> H[Tampilkan pesan Error wajib isi]
+    H --> End
 ```
 
 ### d. Sequence Diagram (Pengiriman Pengaduan)
@@ -398,9 +388,6 @@ Pengujian dilakukan menggunakan metode *Black-box Testing* (berfokus pada fungsi
 1.  Simpulan
     
 
-1.  Simpulan
-    
-
 Dari proses perancangan hingga pengujian yang telah penulis laksanakan, terdapat beberapa kesimpulan yang bisa diambil terkait pembangunan Website Resmi BNN Kota Sawahlunto ini.
 
 Pertama, penulis telah berhasil membangun sebuah sistem berbasis website menggunakan kombinasi React.js dan Sanity CMS. Website ini terbukti bisa menjadi wadah untuk menyampaikan profil instansi, berita terkini, dan informasi edukasi seputar bahaya narkoba.
@@ -434,22 +421,22 @@ LAMPIRAN
 *(Catatan: Diagram ini menunjukkan alur admin dalam menambah berita baru)*
 
 ```mermaid
-activityDiagram
-    start
-    :Admin Login ke Dashboard;
-    :Admin memilih menu Kelola Berita;
-    :Admin mengklik tombol "Tambah Berita";
-    :Sistem menampilkan Form Berita;
-    :Admin mengisi Judul, Kategori, Isi, dan Upload Gambar;
-    :Admin mengklik Simpan;
-    if (Validasi Lengkap?) then (Ya)
-        :Sistem mengunggah gambar ke Sanity Storage;
-        :Sistem menyimpan dokumen Berita ke Sanity Database;
-        :Sistem memperbarui tabel daftar berita;
-    else (Tidak)
-        :Sistem menampilkan pesan Error wajib isi;
-    endif
-    stop
+flowchart TD
+    Start([Mulai]) --> A[Admin Login ke Dashboard]
+    A --> B[Pilih menu Kelola Berita]
+    B --> C[Klik tombol Tambah Berita]
+    C --> D[Sistem menampilkan Form]
+    D --> E[Admin mengisi data dan upload gambar]
+    E --> F[Klik Simpan]
+    F --> G{Validasi lengkap?}
+    
+    G -- Ya --> H[Unggah gambar ke Storage]
+    H --> I[Simpan dokumen ke Database]
+    I --> J[Perbarui tabel admin]
+    J --> End([Selesai])
+    
+    G -- Tidak --> K[Tampilkan pesan Error]
+    K --> End
 ```
 
 **Lampiran 2: Sequence Diagram Tambahan (Pencarian Informasi Publik)**

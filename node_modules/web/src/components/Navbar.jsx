@@ -15,7 +15,7 @@ export default function Navbar() {
   const navItems = [
     { to: "/", label: "Beranda", end: true },
     { to: "/berita", label: "Berita" },
-    { to: "/informasi", label: "Informasi" },
+    { to: "/informasi", label: "Edukasi" },
     { to: "/layanan", label: "Layanan" },
   ];
 

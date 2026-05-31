@@ -206,7 +206,7 @@ export default function ReportPage() {
                 </div>
                 <div>
                   <h4 className="font-label-bold text-label-bold text-on-surface mb-1">Telepon (24 Jam)</h4>
-                  <p className="font-body-small text-body-small text-on-surface-variant">(0754) 123456</p>
+                  <p className="font-body-small text-body-small text-on-surface-variant">081276006723</p>
                 </div>
               </li>
               <li className="flex items-start gap-3 sm:gap-4">
@@ -215,7 +215,7 @@ export default function ReportPage() {
                 </div>
                 <div>
                   <h4 className="font-label-bold text-label-bold text-on-surface mb-1">Email Pengaduan</h4>
-                  <p className="font-body-small text-body-small text-on-surface-variant">lapor@bnn.sawahlunto.go.id</p>
+                  <p className="font-body-small text-body-small text-on-surface-variant">bnnkota_sawahlunto@bnn.go.id</p>
                 </div>
               </li>
             </ul>

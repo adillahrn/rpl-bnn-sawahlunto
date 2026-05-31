@@ -58,7 +58,7 @@ export default function InformationPage() {
       <div className="max-w-container-max mx-auto px-4 sm:px-6 md:px-lg">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
-          <h1 className="font-headline-section text-headline-section text-primary">Informasi</h1>
+          <h1 className="font-headline-section text-headline-section text-primary">Edukasi</h1>
           <p className="font-body-main text-body-main text-on-surface-variant mt-1 sm:mt-2">Edukasi dan informasi seputar narkotika untuk masyarakat</p>
         </div>
 

@@ -60,7 +60,7 @@ Berdasarkan latar belakang tersebut, perumusan masalah dalam proyek ini adalah:
 
 1. Bagaimana membangun sebuah sistem informasi web yang modern, responsif, dan dinamis untuk BNN Kota Sawahlunto?
 2. Bagaimana merancang dan mengimplementasikan fitur portal berita dan informasi edukasi P4GN yang mudah dikelola?
-3. Bagaimana mengintegrasikan sistem formulir pengaduan masyarakat dengan Sanity CMS dan Firebase Storage untuk penyimpanan berkas?
+3. Bagaimana mengintegrasikan sistem formulir pengaduan masyarakat dengan Sanity CMS dan Sanity Asset Pipeline untuk penyimpanan berkas?
 4. Bagaimana merancang dashboard admin yang mempermudah pengelolaan konten (berita, layanan, laporan) secara real-time?
 
 
@@ -70,7 +70,7 @@ Tujuan dari pelaksanaan proyek ini adalah:
 
 1. Menghasilkan sistem informasi web resmi untuk BNN Kota Sawahlunto yang responsif dan mudah digunakan oleh masyarakat.
 2. Menerapkan sistem manajemen konten (Sanity CMS) untuk mempermudah pembaruan berita, informasi edukasi, dan layanan publik.
-3. Mengembangkan fitur pengaduan masyarakat yang terintegrasi dengan database terpusat dan penyimpanan berkas (Firebase Storage).
+3. Mengembangkan fitur pengaduan masyarakat yang terintegrasi dengan database terpusat dan penyimpanan berkas (Sanity Asset Pipeline).
 4. Menyediakan admin dashboard (CMS) khusus untuk pengelolaan dan pemantauan data laporan masyarakat secara efisien.
 
 
@@ -92,7 +92,7 @@ Ruang lingkup pada pengembangan sistem informasi ini batasi pada:
 
 1. Pengembangan frontend web publik menggunakan React.js dan Tailwind CSS, yang mencakup halaman Profil, Berita, Informasi Edukasi, Layanan, dan Lapor (pengaduan masyarakat).
 2. Pengembangan sistem backend (CMS) menggunakan Sanity Studio untuk pengelolaan skema konten (berita, edukasi, laporan, layanan).
-3. Integrasi Firebase SDK khusus untuk penanganan unggahan berkas pada fitur pengaduan masyarakat.
+3. Integrasi Firebase SDK untuk sistem autentikasi (Login Admin) pada fitur pengaduan masyarakat.
 4. Sistem tidak mencakup integrasi dengan sistem pihak ketiga di luar Sanity CMS dan Firebase, serta belum mencakup aplikasi berbasis mobile (native android/iOS).
 
 # METODE
@@ -141,21 +141,21 @@ Implementasi dilakukan dengan kerangka kerja React.js (Vite) untuk bagian web fr
 
 1. Frontend diimplementasikan dengan komponen React yang terbagi menjadi beberapa halaman: Home, Berita, Informasi Edukasi, Layanan, Profil, dan Lapor.
 2. Pengelolaan statis dan dinamis ditangani menggunakan `@sanity/client` untuk melakukan penarikan data dari headless CMS (Sanity).
-3. Formulir pengaduan masyarakat (halaman Lapor) diimplementasikan dengan mengintegrasikan Sanity untuk menyimpan data teks (seperti nama, noHP, dan rincian kejadian) serta Firebase Storage untuk menangani unggahan berkas atau bukti laporan secara aman.
+3. Formulir pengaduan masyarakat (halaman Lapor) diimplementasikan dengan mengintegrasikan Sanity untuk menyimpan data teks (seperti nama, noHP, dan rincian kejadian) serta Sanity Asset Pipeline untuk menangani unggahan berkas atau bukti laporan secara aman.
 
 - 1. **Integration & Testing**
 
-Tahap integrasi memastikan frontend dapat berkomunikasi dengan lancar dengan Sanity CMS dan Firebase Storage.
+Tahap integrasi memastikan frontend dapat berkomunikasi dengan lancar dengan Sanity CMS dan Sanity Asset Pipeline.
 
 1. Konfigurasi kredensial Sanity dan Firebase diatur melalui environment variables.
 2. Pengujian dilakukan untuk memastikan data berita dan edukasi yang diterbitkan di Sanity Studio segera tampil di halaman publik secara dinamis.
-3. Fungsionalitas pengiriman laporan diuji untuk memastikan berkas terunggah ke Firebase Storage dengan benar dan data form tersimpan ke Sanity CMS dengan status "baru". Seluruh halaman juga diuji responsivitasnya pada berbagai ukuran layar.
+3. Fungsionalitas pengiriman laporan diuji untuk memastikan berkas terunggah ke Sanity Asset Pipeline dengan benar dan data form tersimpan ke Sanity CMS dengan status "baru". Seluruh halaman juga diuji responsivitasnya pada berbagai ukuran layar.
 
 # SIMPULAN DAN SARAN
 
 - 1. **Simpulan**
 
-Berdasarkan hasil perancangan dan implementasi yang telah dilakukan, dapat disimpulkan bahwa proyek sistem informasi web resmi BNN Kota Sawahlunto telah berhasil diselesaikan. Penggunaan teknologi modern seperti React.js, Tailwind CSS, Sanity CMS, dan Firebase Storage terbukti efektif dalam menghasilkan aplikasi web yang responsif, dinamis, dan terpusat. Keberadaan platform ini memberikan kemudahan bagi masyarakat dalam mengakses informasi edukasi P4GN, layanan BNN, serta melakukan pelaporan pengaduan masyarakat. Di sisi lain, dasbor admin berbasis Sanity CMS berhasil mempermudah pengelolaan konten dan pemantauan laporan masyarakat secara efisien.
+Berdasarkan hasil perancangan dan implementasi yang telah dilakukan, dapat disimpulkan bahwa proyek sistem informasi web resmi BNN Kota Sawahlunto telah berhasil diselesaikan. Penggunaan teknologi modern seperti React.js, Tailwind CSS, Sanity CMS, dan Sanity Asset Pipeline terbukti efektif dalam menghasilkan aplikasi web yang responsif, dinamis, dan terpusat. Keberadaan platform ini memberikan kemudahan bagi masyarakat dalam mengakses informasi edukasi P4GN, layanan BNN, serta melakukan pelaporan pengaduan masyarakat. Di sisi lain, dasbor admin berbasis Sanity CMS berhasil mempermudah pengelolaan konten dan pemantauan laporan masyarakat secara efisien.
 
 - 1. **Saran**
 
@@ -171,7 +171,7 @@ Terdapat beberapa saran yang dapat dipertimbangkan untuk pengembangan lebih lanj
 
 - Dokumentasi Sanity CMS. (2025). *Sanity: The Composable Content Cloud*. Tersedia di: https://www.sanity.io/docs
 
-- Dokumentasi Firebase Storage. (2025). *Firebase Cloud Storage*. Tersedia di: https://firebase.google.com/docs/storage
+- Dokumentasi Sanity Asset Pipeline. (2025). *Firebase Cloud Storage*. Tersedia di: https://firebase.google.com/docs/storage
 
 - Tailwind CSS. (2025). *Rapidly build modern websites without ever leaving your HTML*. Tersedia di: https://tailwindcss.com/
 

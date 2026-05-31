@@ -170,42 +170,46 @@ Sistem website BNN Sawahlunto ini menggunakan Sanity CMS, yang pada dasarnya ada
 
 ```mermaid
 erDiagram
+    ADMIN {
+        string uid PK
+        string email
+        string password_hash
+    }
+    MASYARAKAT {
+        string id_pengunjung PK
+        string nama
+        string no_hp
+    }
     NEWS {
         string _id PK
         string title
-        string slug
         string category
-        string excerpt
         text body
         datetime publishedAt
-        reference image
     }
     INFORMATION {
         string _id PK
         string title
-        string slug
         string category
         string mediaType
-        string mediaUrl
-        string excerpt
         text body
-        datetime publishedAt
-        reference image
     }
     REPORT {
         string _id PK
         string name
-        string age
         string phone
         text description
-        string status "pending/processed/resolved"
+        string status
         datetime submittedAt
-        reference evidence
     }
     
-    NEWS ||--o{ IMAGE : has
-    INFORMATION ||--o{ IMAGE : has
-    REPORT ||--o{ FILE : attaches
+    ADMIN ||--o{ NEWS : "mengelola (CRUD)"
+    ADMIN ||--o{ INFORMATION : "mengelola (CRUD)"
+    ADMIN ||--o{ REPORT : "memperbarui status"
+    
+    MASYARAKAT ||--o{ REPORT : "mengirim"
+    MASYARAKAT }o--o{ NEWS : "membaca"
+    MASYARAKAT }o--o{ INFORMATION : "membaca"
 ```
 
 ### b. Class Diagram

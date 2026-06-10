@@ -62,7 +62,7 @@ export default function AdminDashboard() {
 
         {/* CMS Link Card */}
         <a
-          href="https://YOUR_PROJECT_ID.sanity.studio"
+          href="https://www.sanity.io/@oboqPFr9g/studio/fzzdvp1wstj1hib8griyt9ar/bnn-sawahlunto/structure"
           target="_blank"
           rel="noopener noreferrer"
           className="bg-primary rounded-2xl p-5 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow group"

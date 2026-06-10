@@ -1,22 +1,30 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { fetchNews } from '../lib/sanity';
+import { Link, useSearchParams } from 'react-router-dom';
+import { fetchNewsPaginated } from '../lib/sanity';
 
 const categories = ['Semua', 'Sosialisasi', 'Rehabilitasi', 'Operasi', 'Kegiatan', 'Pengumuman'];
+const PAGE_SIZE = 12;
 
 export default function NewsPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialPage = parseInt(searchParams.get('page')) || 1;
+
   const [activeFilter, setActiveFilter] = useState('Semua');
   const [news, setNews] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(initialPage);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
 
   useEffect(() => {
     const loadNews = async () => {
       setIsLoading(true);
       try {
-        const data = await fetchNews(20);
-        setNews(data);
+        const data = await fetchNewsPaginated(currentPage, PAGE_SIZE, activeFilter);
+        setNews(data.items || []);
+        setTotalItems(data.total || 0);
+        setTotalPages(Math.max(1, Math.ceil((data.total || 0) / PAGE_SIZE)));
       } catch (error) {
         console.error('Error fetching news:', error);
       } finally {
@@ -24,12 +32,31 @@ export default function NewsPage() {
       }
     };
     loadNews();
-  }, []);
+  }, [currentPage, activeFilter]);
 
+  // Sync page to URL
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+    if (currentPage > 1) {
+      params.set('page', currentPage.toString());
+    } else {
+      params.delete('page');
+    }
+    setSearchParams(params, { replace: true });
+  }, [currentPage]);
+
+  // Reset to page 1 when filter changes
+  const handleFilterChange = (cat) => {
+    setActiveFilter(cat);
+    setCurrentPage(1);
+    setSearchQuery('');
+  };
+
+  // Client-side search within current page results
   const filteredNews = news.filter(item => {
-    const matchesCategory = activeFilter === 'Semua' || (item.category && item.category.toLowerCase() === activeFilter.toLowerCase());
-    const matchesSearch = item.title?.toLowerCase().includes(searchQuery.toLowerCase()) || item.excerpt?.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
+    if (!searchQuery) return true;
+    return item.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+           item.excerpt?.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
   const formatDate = (dateString) => {
@@ -44,6 +71,23 @@ export default function NewsPage() {
     if (cat === 'sosialisasi') return 'bg-primary-container/10 text-primary';
     if (cat === 'operasi') return 'bg-secondary-container/20 text-on-secondary-fixed-variant';
     return 'bg-surface-tint/10 text-surface-tint';
+  };
+
+  // Generate page numbers with ellipsis
+  const getPageNumbers = () => {
+    const pages = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (currentPage > 3) pages.push('...');
+      const start = Math.max(2, currentPage - 1);
+      const end = Math.min(totalPages - 1, currentPage + 1);
+      for (let i = start; i <= end; i++) pages.push(i);
+      if (currentPage < totalPages - 2) pages.push('...');
+      pages.push(totalPages);
+    }
+    return pages;
   };
 
   return (
@@ -62,7 +106,7 @@ export default function NewsPage() {
             {categories.map((cat) => (
               <button
                 key={cat}
-                onClick={() => setActiveFilter(cat)}
+                onClick={() => handleFilterChange(cat)}
                 className={`px-4 py-2 rounded-full font-label-bold text-label-bold whitespace-nowrap transition-all active:scale-95 ${
                   activeFilter === cat
                     ? 'bg-primary text-on-primary shadow-md'
@@ -87,7 +131,7 @@ export default function NewsPage() {
           </div>
         </div>
 
-        {/* 3x3 Grid */}
+        {/* 3x4 Grid */}
         {isLoading ? (
           <div className="flex justify-center items-center py-20">
             <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
@@ -133,6 +177,59 @@ export default function NewsPage() {
             <h3 className="font-headline-card text-xl text-on-surface mb-2">Belum ada berita</h3>
             <p className="text-on-surface-variant">Belum ada berita yang diterbitkan untuk kategori ini.</p>
           </div>
+        )}
+
+        {/* Pagination */}
+        {!isLoading && totalPages > 1 && (
+          <nav className="flex items-center justify-center gap-1.5 sm:gap-2 mt-10 md:mt-14" aria-label="Pagination">
+            {/* Previous */}
+            <button
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="flex items-center gap-1 px-3 sm:px-4 py-2 rounded-full font-label-bold text-label-bold transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed bg-surface-container-lowest border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary disabled:hover:border-outline-variant disabled:hover:text-on-surface-variant"
+            >
+              <span className="material-symbols-outlined text-[18px]">chevron_left</span>
+              <span className="hidden sm:inline">Sebelumnya</span>
+            </button>
+
+            {/* Page Numbers */}
+            <div className="flex items-center gap-1">
+              {getPageNumbers().map((page, idx) =>
+                page === '...' ? (
+                  <span key={`ellipsis-${idx}`} className="px-2 py-2 text-on-surface-variant select-none">…</span>
+                ) : (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`min-w-[36px] sm:min-w-[40px] h-9 sm:h-10 rounded-full font-label-bold text-label-bold transition-all active:scale-95 ${
+                      currentPage === page
+                        ? 'bg-primary text-on-primary shadow-md'
+                        : 'text-on-surface-variant hover:bg-surface-container hover:text-primary'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                )
+              )}
+            </div>
+
+            {/* Next */}
+            <button
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="flex items-center gap-1 px-3 sm:px-4 py-2 rounded-full font-label-bold text-label-bold transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed bg-surface-container-lowest border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary disabled:hover:border-outline-variant disabled:hover:text-on-surface-variant"
+            >
+              <span className="hidden sm:inline">Selanjutnya</span>
+              <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+            </button>
+          </nav>
+        )}
+
+        {/* Results info */}
+        {!isLoading && totalItems > 0 && (
+          <p className="text-center text-on-surface-variant text-sm mt-4">
+            Menampilkan {((currentPage - 1) * PAGE_SIZE) + 1}–{Math.min(currentPage * PAGE_SIZE, totalItems)} dari {totalItems} berita
+          </p>
         )}
 
       </div>

@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { fetchInformation } from '../lib/sanity';
+import { Link, useSearchParams } from 'react-router-dom';
+import { fetchInformationPaginated } from '../lib/sanity';
 
 const filters = ['Semua', 'Video', 'Artikel'];
+const PAGE_SIZE = 12;
 
 const faqData = [
   { q: 'Apa itu Narkotika?', a: 'Narkotika adalah zat atau obat yang berasal dari tanaman atau bukan tanaman, baik sintetis maupun semisintetis, yang dapat menyebabkan penurunan atau perubahan kesadaran, hilangnya rasa nyeri, dan dapat menimbulkan ketergantungan. Contoh: ganja, kokain, heroin, dan morfin.' },
@@ -14,18 +15,26 @@ const faqData = [
 ];
 
 export default function InformationPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialPage = parseInt(searchParams.get('page')) || 1;
+
   const [activeFilter, setActiveFilter] = useState('Semua');
   const [openFaq, setOpenFaq] = useState(null);
   const [items, setItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(initialPage);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
 
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
       try {
-        const data = await fetchInformation(20);
-        setItems(data);
+        const data = await fetchInformationPaginated(currentPage, PAGE_SIZE, activeFilter);
+        setItems(data.items || []);
+        setTotalItems(data.total || 0);
+        setTotalPages(Math.max(1, Math.ceil((data.total || 0) / PAGE_SIZE)));
       } catch (error) {
         console.error('Error fetching information:', error);
       } finally {
@@ -33,17 +42,31 @@ export default function InformationPage() {
       }
     };
     loadData();
-  }, []);
+  }, [currentPage, activeFilter]);
 
+  // Sync page to URL
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+    if (currentPage > 1) {
+      params.set('page', currentPage.toString());
+    } else {
+      params.delete('page');
+    }
+    setSearchParams(params, { replace: true });
+  }, [currentPage]);
+
+  // Reset to page 1 when filter changes
+  const handleFilterChange = (f) => {
+    setActiveFilter(f);
+    setCurrentPage(1);
+    setSearchQuery('');
+  };
+
+  // Client-side search within current page results
   const filtered = items.filter(i => {
-    const matchesFilter = activeFilter === 'Semua' || (() => {
-      const type = i.mediaType === 'youtube' || i.mediaType === 'video' ? 'Video' : 'Artikel';
-      return type === activeFilter;
-    })();
-    const matchesSearch = !searchQuery ||
-      i.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      i.excerpt?.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesFilter && matchesSearch;
+    if (!searchQuery) return true;
+    return i.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+           i.excerpt?.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
   const formatDate = (dateString) => {
@@ -51,6 +74,23 @@ export default function InformationPage() {
     return new Date(dateString).toLocaleDateString('id-ID', {
       day: 'numeric', month: 'short', year: 'numeric'
     });
+  };
+
+  // Generate page numbers with ellipsis
+  const getPageNumbers = () => {
+    const pages = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (currentPage > 3) pages.push('...');
+      const start = Math.max(2, currentPage - 1);
+      const end = Math.min(totalPages - 1, currentPage + 1);
+      for (let i = start; i <= end; i++) pages.push(i);
+      if (currentPage < totalPages - 2) pages.push('...');
+      pages.push(totalPages);
+    }
+    return pages;
   };
 
   return (
@@ -69,7 +109,7 @@ export default function InformationPage() {
             {filters.map((f) => (
               <button
                 key={f}
-                onClick={() => setActiveFilter(f)}
+                onClick={() => handleFilterChange(f)}
                 className={`px-4 py-2 rounded-full font-label-bold text-label-bold whitespace-nowrap transition-all active:scale-95 flex items-center gap-1.5 ${
                   activeFilter === f
                     ? 'bg-primary text-on-primary shadow-md'
@@ -145,6 +185,59 @@ export default function InformationPage() {
             <h3 className="font-headline-card text-xl text-on-surface mb-2">Belum ada informasi</h3>
             <p className="text-on-surface-variant">Belum ada informasi atau edukasi untuk kategori ini.</p>
           </div>
+        )}
+
+        {/* Pagination */}
+        {!isLoading && totalPages > 1 && (
+          <nav className="flex items-center justify-center gap-1.5 sm:gap-2 mt-10 md:mt-14" aria-label="Pagination">
+            {/* Previous */}
+            <button
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="flex items-center gap-1 px-3 sm:px-4 py-2 rounded-full font-label-bold text-label-bold transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed bg-surface-container-lowest border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary disabled:hover:border-outline-variant disabled:hover:text-on-surface-variant"
+            >
+              <span className="material-symbols-outlined text-[18px]">chevron_left</span>
+              <span className="hidden sm:inline">Sebelumnya</span>
+            </button>
+
+            {/* Page Numbers */}
+            <div className="flex items-center gap-1">
+              {getPageNumbers().map((page, idx) =>
+                page === '...' ? (
+                  <span key={`ellipsis-${idx}`} className="px-2 py-2 text-on-surface-variant select-none">…</span>
+                ) : (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`min-w-[36px] sm:min-w-[40px] h-9 sm:h-10 rounded-full font-label-bold text-label-bold transition-all active:scale-95 ${
+                      currentPage === page
+                        ? 'bg-primary text-on-primary shadow-md'
+                        : 'text-on-surface-variant hover:bg-surface-container hover:text-primary'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                )
+              )}
+            </div>
+
+            {/* Next */}
+            <button
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="flex items-center gap-1 px-3 sm:px-4 py-2 rounded-full font-label-bold text-label-bold transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed bg-surface-container-lowest border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary disabled:hover:border-outline-variant disabled:hover:text-on-surface-variant"
+            >
+              <span className="hidden sm:inline">Selanjutnya</span>
+              <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+            </button>
+          </nav>
+        )}
+
+        {/* Results info */}
+        {!isLoading && totalItems > 0 && (
+          <p className="text-center text-on-surface-variant text-sm mt-4">
+            Menampilkan {((currentPage - 1) * PAGE_SIZE) + 1}–{Math.min(currentPage * PAGE_SIZE, totalItems)} dari {totalItems} informasi
+          </p>
         )}
 
         {/* Ensiklopedia Narkotika (FAQ) */}

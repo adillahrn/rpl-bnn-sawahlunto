@@ -54,6 +54,51 @@ function checkConfig() {
 }
 
 // ============================================
+// IN-MEMORY CACHE (Stale-While-Revalidate)
+// ============================================
+
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const cache = new Map();
+
+/**
+ * Cached fetch wrapper with stale-while-revalidate strategy.
+ * Returns cached data instantly if available, then revalidates in background.
+ */
+async function cachedFetch(cacheKey, fetchFn) {
+  const cached = cache.get(cacheKey);
+  const now = Date.now();
+
+  if (cached) {
+    // If data is still fresh, return it directly
+    if (now - cached.timestamp < CACHE_TTL) {
+      return cached.data;
+    }
+    // If stale, return cached data but revalidate in background
+    fetchFn().then(freshData => {
+      cache.set(cacheKey, { data: freshData, timestamp: Date.now() });
+    }).catch(err => console.warn('[Cache] Background revalidation failed:', err));
+    return cached.data;
+  }
+
+  // No cache — fetch fresh
+  const data = await fetchFn();
+  cache.set(cacheKey, { data, timestamp: now });
+  return data;
+}
+
+/**
+ * Invalidate cache entries by type prefix (e.g. 'news', 'information').
+ * Call this after admin CRUD operations.
+ */
+export function invalidateCache(typePrefix) {
+  for (const key of cache.keys()) {
+    if (key.startsWith(typePrefix)) {
+      cache.delete(key);
+    }
+  }
+}
+
+// ============================================
 // NEWS Queries
 // ============================================
 
@@ -62,19 +107,59 @@ function checkConfig() {
  */
 export async function fetchNews(limit = 10) {
   if (!checkConfig()) return [];
-  return client.fetch(
-    `*[_type == "news"] | order(publishedAt desc) [0...$limit] {
-      _id,
-      title,
-      slug,
-      excerpt,
-      body,
-      category,
-      "imageUrl": image.asset->url,
-      publishedAt
-    }`,
-    { limit }
+  const cacheKey = `news:all:${limit}`;
+  return cachedFetch(cacheKey, () =>
+    client.fetch(
+      `*[_type == "news"] | order(publishedAt desc) [0...$limit] {
+        _id,
+        title,
+        slug,
+        excerpt,
+        body,
+        category,
+        "imageUrl": image.asset->url,
+        publishedAt
+      }`,
+      { limit }
+    )
   );
+}
+
+/**
+ * Fetch paginated news articles with total count.
+ * @param {number} page - 1-indexed page number
+ * @param {number} pageSize - items per page (default 12)
+ * @param {string} category - filter by category, 'Semua' for all
+ * @returns {{ items: Array, total: number }}
+ */
+export async function fetchNewsPaginated(page = 1, pageSize = 12, category = 'Semua') {
+  if (!checkConfig()) return { items: [], total: 0 };
+
+  const start = (page - 1) * pageSize;
+  const end = start + pageSize;
+  const cacheKey = `news:paginated:${page}:${pageSize}:${category}`;
+
+  return cachedFetch(cacheKey, async () => {
+    const categoryFilter = category !== 'Semua'
+      ? `&& category match $category`
+      : '';
+
+    const query = `{
+      "items": *[_type == "news" ${categoryFilter}] | order(publishedAt desc) [$start...$end] {
+        _id,
+        title,
+        slug,
+        excerpt,
+        category,
+        "imageUrl": image.asset->url,
+        publishedAt
+      },
+      "total": count(*[_type == "news" ${categoryFilter}])
+    }`;
+
+    const params = { start, end, ...(category !== 'Semua' ? { category } : {}) };
+    return client.fetch(query, params);
+  });
 }
 
 /**
@@ -106,21 +191,65 @@ export async function fetchNewsBySlug(slug) {
  */
 export async function fetchInformation(limit = 20) {
   if (!checkConfig()) return [];
-  return client.fetch(
-    `*[_type == "information"] | order(publishedAt desc) [0...$limit] {
-      _id,
-      title,
-      slug,
-      excerpt,
-      body,
-      category,
-      mediaType,
-      mediaUrl,
-      "imageUrl": image.asset->url,
-      publishedAt
-    }`,
-    { limit }
+  const cacheKey = `information:all:${limit}`;
+  return cachedFetch(cacheKey, () =>
+    client.fetch(
+      `*[_type == "information"] | order(publishedAt desc) [0...$limit] {
+        _id,
+        title,
+        slug,
+        excerpt,
+        body,
+        category,
+        mediaType,
+        mediaUrl,
+        "imageUrl": image.asset->url,
+        publishedAt
+      }`,
+      { limit }
+    )
   );
+}
+
+/**
+ * Fetch paginated information articles with total count.
+ * @param {number} page - 1-indexed page number
+ * @param {number} pageSize - items per page (default 12)
+ * @param {string} filter - 'Semua', 'Video', or 'Artikel'
+ * @returns {{ items: Array, total: number }}
+ */
+export async function fetchInformationPaginated(page = 1, pageSize = 12, filter = 'Semua') {
+  if (!checkConfig()) return { items: [], total: 0 };
+
+  const start = (page - 1) * pageSize;
+  const end = start + pageSize;
+  const cacheKey = `information:paginated:${page}:${pageSize}:${filter}`;
+
+  return cachedFetch(cacheKey, async () => {
+    let mediaFilter = '';
+    if (filter === 'Video') {
+      mediaFilter = '&& (mediaType == "youtube" || mediaType == "video")';
+    } else if (filter === 'Artikel') {
+      mediaFilter = '&& (mediaType != "youtube" && mediaType != "video")';
+    }
+
+    const query = `{
+      "items": *[_type == "information" ${mediaFilter}] | order(publishedAt desc) [$start...$end] {
+        _id,
+        title,
+        slug,
+        excerpt,
+        category,
+        mediaType,
+        mediaUrl,
+        "imageUrl": image.asset->url,
+        publishedAt
+      },
+      "total": count(*[_type == "information" ${mediaFilter}])
+    }`;
+
+    return client.fetch(query, { start, end });
+  });
 }
 
 /**

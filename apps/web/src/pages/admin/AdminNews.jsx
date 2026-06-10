@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { client, writeClient, urlFor } from '../../lib/sanity';
+import { client, writeClient, urlFor, invalidateCache } from '../../lib/sanity';
 
 export default function AdminNews() {
   const [newsList, setNewsList] = useState([]);
@@ -95,6 +95,7 @@ export default function AdminNews() {
         await writeClient.create(doc);
       }
 
+      invalidateCache('news');
       setIsFormOpen(false);
       resetForm();
       await fetchNews();
@@ -111,6 +112,7 @@ export default function AdminNews() {
     if (confirm("Apakah Anda yakin ingin menghapus berita ini?")) {
       try {
         await writeClient.delete(id);
+        invalidateCache('news');
         fetchNews();
       } catch (error) {
         console.error("Error deleting:", error);
